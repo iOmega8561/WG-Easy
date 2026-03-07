@@ -68,19 +68,6 @@ module.exports = class WireGuard {
       const config = await this.__buildConfig();
 
       await this.__saveConfig(config);
-      await Util.exec('wg-quick down wg0').catch(() => {});
-      await Util.exec('wg-quick up wg0').catch((err) => {
-        if (err && err.message && err.message.includes('Cannot find device "wg0"')) {
-          throw new Error('WireGuard exited with the error: Cannot find device "wg0"\nThis usually means that your host\'s kernel does not support WireGuard!');
-        }
-
-        throw err;
-      });
-      // await Util.exec(`iptables -t nat -A POSTROUTING -s ${WG_DEFAULT_ADDRESS.replace('x', '0')}/24 -o ' + WG_DEVICE + ' -j MASQUERADE`);
-      // await Util.exec('iptables -A INPUT -p udp -m udp --dport 51820 -j ACCEPT');
-      // await Util.exec('iptables -A FORWARD -i wg0 -j ACCEPT');
-      // await Util.exec('iptables -A FORWARD -o wg0 -j ACCEPT');
-      await this.__syncConfig();
     }
 
     return this.__configPromise;
@@ -89,7 +76,6 @@ module.exports = class WireGuard {
   async saveConfig() {
     const config = await this.getConfig();
     await this.__saveConfig(config);
-    await this.__syncConfig();
   }
 
   async __saveConfig(config) {
@@ -130,12 +116,6 @@ ${client.preSharedKey ? `PresharedKey = ${client.preSharedKey}\n` : ''
     debug('Config saved.');
   }
 
-  async __syncConfig() {
-    debug('Config syncing...');
-    await Util.exec('wg syncconf wg0 <(wg-quick strip wg0)');
-    debug('Config synced.');
-  }
-
   async getClients() {
     const config = await this.getConfig();
     const clients = Object.entries(config.clients).map(([clientId, client]) => ({
@@ -149,41 +129,7 @@ ${client.preSharedKey ? `PresharedKey = ${client.preSharedKey}\n` : ''
       allowedIPs: client.allowedIPs,
       downloadableConfig: 'privateKey' in client,
       persistentKeepalive: null,
-      latestHandshakeAt: null,
-      transferRx: null,
-      transferTx: null,
     }));
-
-    // Loop WireGuard status
-    const dump = await Util.exec('wg show wg0 dump', {
-      log: false,
-    });
-    dump
-      .trim()
-      .split('\n')
-      .slice(1)
-      .forEach((line) => {
-        const [
-          publicKey,
-          preSharedKey, // eslint-disable-line no-unused-vars
-          endpoint, // eslint-disable-line no-unused-vars
-          allowedIps, // eslint-disable-line no-unused-vars
-          latestHandshakeAt,
-          transferRx,
-          transferTx,
-          persistentKeepalive,
-        ] = line.split('\t');
-
-        const client = clients.find((client) => client.publicKey === publicKey);
-        if (!client) return;
-
-        client.latestHandshakeAt = latestHandshakeAt === '0'
-          ? null
-          : new Date(Number(`${latestHandshakeAt}000`));
-        client.transferRx = Number(transferRx);
-        client.transferTx = Number(transferTx);
-        client.persistentKeepalive = persistentKeepalive;
-      });
 
     return clients;
   }
@@ -327,16 +273,11 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
     await this.saveConfig();
   }
 
-  async __reloadConfig() {
-    await this.__buildConfig();
-    await this.__syncConfig();
-  }
-
   async restoreConfiguration(config) {
     debug('Starting configuration restore process.');
     const _config = JSON.parse(config);
     await this.__saveConfig(_config);
-    await this.__reloadConfig();
+    await this.__buildConfig();
     debug('Configuration restore process completed.');
   }
 
@@ -347,10 +288,4 @@ Endpoint = ${WG_HOST}:${WG_CONFIG_PORT}`;
     debug('Configuration backup completed.');
     return backup;
   }
-
-  // Shutdown wireguard
-  async Shutdown() {
-    await Util.exec('wg-quick down wg0').catch(() => {});
-  }
-
 };
