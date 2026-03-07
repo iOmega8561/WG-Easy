@@ -39,4 +39,5 @@ ENV DEBUG=Server,WireGuard
 
 # Run Web UI
 WORKDIR /app
+EXPOSE 3000/tcp
 CMD ["/usr/bin/dumb-init", "node", "server.js"]
