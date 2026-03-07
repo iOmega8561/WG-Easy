@@ -43,20 +43,6 @@ class API {
     });
   }
 
-  async getuiTrafficStats() {
-    return this.call({
-      method: 'get',
-      path: '/ui-traffic-stats',
-    });
-  }
-
-  async getChartType() {
-    return this.call({
-      method: 'get',
-      path: '/ui-chart-type',
-    });
-  }
-
   async getSession() {
     return this.call({
       method: 'get',
@@ -86,10 +72,7 @@ class API {
     }).then((clients) => clients.map((client) => ({
       ...client,
       createdAt: new Date(client.createdAt),
-      updatedAt: new Date(client.updatedAt),
-      latestHandshakeAt: client.latestHandshakeAt !== null
-        ? new Date(client.latestHandshakeAt)
-        : null,
+      updatedAt: new Date(client.updatedAt)
     })));
   }
 
