@@ -3,7 +3,7 @@
 const { release: { version } } = require('./package.json');
 
 module.exports.RELEASE = version;
-module.exports.PORT = process.env.PORT || '51821';
+module.exports.PORT = process.env.PORT || '3000';
 module.exports.WEBUI_HOST = process.env.WEBUI_HOST || '0.0.0.0';
 /** This is only kept for migration purpose. DO NOT USE! */
 module.exports.PASSWORD = process.env.PASSWORD;
