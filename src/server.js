@@ -17,7 +17,7 @@ WireGuard.getConfig()
 process.on('SIGTERM', async () => {
   // eslint-disable-next-line no-console
   console.log('SIGTERM signal received.');
-  await WireGuard.Shutdown();
+  
   // eslint-disable-next-line no-process-exit
   process.exit(0);
 });
