@@ -16,9 +16,6 @@
   [v-cloak] {
     display: none;
   }
-  .line-chart .apexcharts-svg{
-    transform: translateY(3px);
-  }
 </style>
 
 <body class="bg-gray-50 dark:bg-neutral-800">
@@ -52,15 +49,6 @@
                   d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
               </svg>
             </button>
-            <!-- Show / hide charts -->
-            <label v-if="uiChartType > 0" class="inline-flex items-center justify-center cursor-pointer w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-neutral-700 dark:hover:bg-neutral-600 whitespace-nowrap transition group" :title="$t('toggleCharts')">
-              <input type="checkbox" value="" class="sr-only peer" v-model="uiShowCharts" @change="toggleCharts">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" fill="currentColor"
-                class="w-5 h-5 peer fill-gray-400 peer-checked:fill-gray-600 dark:fill-neutral-600 peer-checked:dark:fill-neutral-400 group-hover:dark:fill-neutral-500 transition">
-                  <path
-                    d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
-              </svg>
-            </label>
             <span v-if="requiresPassword"
               class="text-sm text-gray-400 dark:text-neutral-400 cursor-pointer hover:underline"
               @click="logout">
@@ -130,37 +118,8 @@
             <div v-if="clients && clients.length > 0" v-for="client in clients" :key="client.id"
               class="relative overflow-hidden border-b last:border-b-0 border-gray-100 dark:border-neutral-600 border-solid">
 
-              <!-- Chart -->
-              <div v-if="uiChartType" :class="`absolute z-0 bottom-0 left-0 right-0 h-6 ${uiChartType === 1 && 'line-chart'}`" >
-                <apexchart width="100%" height="100%" :options="chartOptionsTX" :series="client.transferTxSeries">
-                </apexchart>
-              </div>
-              <div v-if="uiChartType" :class="`absolute z-0 top-0 left-0 right-0 h-6 ${uiChartType === 1 && 'line-chart'}`" >
-                <apexchart width="100%" height="100%" :options="chartOptionsRX" :series="client.transferRxSeries"
-                  style="transform: scaleY(-1);">
-                </apexchart>
-              </div>
-
               <div class="relative py-3 md:py-5 px-3 z-10 flex flex-col sm:flex-row justify-between gap-3">
                 <div class="flex gap-3 md:gap-4 w-full items-center ">
-
-                  <!-- Avatar -->
-                  <div class="h-10 w-10 mt-2 self-start rounded-full bg-gray-50 relative">
-                    <svg class="w-6 m-2 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                      fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                        clip-rule="evenodd" />
-                    </svg>
-                    <img v-if="client.avatar" :src="client.avatar" class="w-10 rounded-full absolute top-0 left-0" />
-
-                    <div
-                      v-if="client.latestHandshakeAt && ((new Date() - new Date(client.latestHandshakeAt) < 1000 * 60 * 10))">
-                      <div
-                        class="animate-ping w-4 h-4 p-1 bg-red-100 dark:bg-red-100 rounded-full absolute -bottom-1 -right-1">
-                      </div>
-                      <div class="w-2 h-2 bg-red-800 dark:bg-red-600 rounded-full absolute bottom-0 right-0"></div>
-                    </div>
-                  </div>
 
                   <!-- Name & Info -->
                   <div class="flex flex-col xxs:flex-row w-full gap-2">
@@ -215,77 +174,7 @@
                             </svg>
                           </span>
                         </span>
-                        <!-- Inline Transfer TX -->
-                        <span v-if="!uiTrafficStats && client.transferTx" class="whitespace-nowrap" :title="$t('totalDownload') + bytes(client.transferTx)">
-                          ·
-                          <svg class="align-middle h-3 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                              d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                              clip-rule="evenodd" />
-                          </svg>
-                          {{client.transferTxCurrent | bytes}}/s
-                        </span>
-                        
-                        <!-- Inline Transfer RX -->
-                        <span v-if="!uiTrafficStats && client.transferRx" class="whitespace-nowrap" :title="$t('totalUpload') + bytes(client.transferRx)">
-                          ·
-                          <svg class="align-middle h-3 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                              d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                              clip-rule="evenodd" />
-                          </svg>
-                          {{client.transferRxCurrent | bytes}}/s
-                        </span>
-                        <!-- Last seen -->
-                        <span class="text-gray-400 dark:text-neutral-500 whitespace-nowrap" v-if="client.latestHandshakeAt"
-                          :title="$t('lastSeen') + dateTime(new Date(client.latestHandshakeAt))">
-                          {{!uiTrafficStats ? " · " : ""}}{{new Date(client.latestHandshakeAt) | timeago}}
-                        </span>
                       </div>
-                    </div>
-
-                    <!-- Info -->
-                    <div v-if="uiTrafficStats"
-                      class="flex gap-2 items-center shrink-0 text-gray-400 dark:text-neutral-400 text-xs mt-px justify-end">
-
-                      <!-- Transfer TX -->
-                      <div class="min-w-20 md:min-w-24" v-if="client.transferTx">
-                        <span class="flex gap-1" :title="$t('totalDownload') + bytes(client.transferTx)">
-                          <svg class="align-middle h-3 inline mt-0.5" xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                              d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                              clip-rule="evenodd" />
-                          </svg>
-                          <div>
-                            <span class="text-gray-700 dark:text-neutral-200">{{client.transferTxCurrent |
-                              bytes}}/s</span>
-                            <!-- Total TX -->
-                            <br><span class="font-regular" style="font-size:0.85em">{{bytes(client.transferTx)}}</span>
-                          </div>
-                        </span>
-
-                      </div>
-
-                      <!-- Transfer RX -->
-                      <div class="min-w-20 md:min-w-24" v-if="client.transferRx">
-                        <span class="flex gap-1" :title="$t('totalUpload') + bytes(client.transferRx)">
-
-                          <svg class="align-middle h-3 inline mt-0.5" xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                              d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                              clip-rule="evenodd" />
-                          </svg>
-                          <div>
-                            <span class="text-gray-700 dark:text-neutral-200">{{client.transferRxCurrent |
-                              bytes}}/s</span>
-                            <!-- Total RX -->
-                            <br><span class="font-regular" style="font-size:0.85em">{{bytes(client.transferRx)}}</span>
-                          </div>
-                        </span>
-                      </div>
-
                     </div>
                   </div>
                   <!-- </div> --> <!-- <div class="flex flex-grow items-center"> -->
@@ -552,13 +441,6 @@
 
         <form @submit="login"
           class="shadow rounded-md bg-white dark:bg-neutral-700 mx-auto w-64 p-5 overflow-hidden mt-10">
-          <!-- Avatar -->
-          <div class="h-20 w-20 mb-10 mt-5 mx-auto rounded-full bg-red-800 dark:bg-red-800 relative overflow-hidden">
-            <svg class="w-10 h-10 m-5 text-white dark:text-white" xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-            </svg>
-          </div>
 
           <input type="password" name="password" :placeholder="$t('password')" v-model="password" autocomplete="current-password"
             class="px-3 py-2 text-sm dark:bg-neutral-700 text-gray-500 dark:text-gray-500 mb-5 border-2 border-gray-100 dark:border-neutral-800 rounded-lg w-full focus:border-red-800 dark:focus:border-red-800 dark:placeholder:text-neutral-400 outline-none" />
@@ -595,19 +477,10 @@
       </div>
 
     </div>
-
-    <p v-cloak class="text-center m-10 text-gray-300 dark:text-neutral-600 text-xs"> <a class="hover:underline" target="_blank"
-        href="https://github.com/wg-easy/wg-easy">WireGuard Easy</a> © 2021-2024 by <a class="hover:underline" target="_blank"
-        href="https://emilenijssen.nl/?ref=wg-easy">Emile Nijssen</a> is licensed under <a class="hover:underline" target="_blank"
-        href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> · <a class="hover:underline"
-        href="https://github.com/sponsors/WeeJeWel" target="_blank">{{$t("donate")}}</a></p>
-
   </div>
 
   <script src="./js/vendor/vue.min.js"></script>
   <script src="./js/vendor/vue-i18n.min.js"></script>
-  <script src="./js/vendor/apexcharts.min.js"></script>
-  <script src="./js/vendor/vue-apexcharts.min.js"></script>
   <script src="./js/vendor/sha256.min.js"></script>
   <script src="./js/vendor/timeago.full.min.js"></script>
   <script src="./js/api.js"></script>
