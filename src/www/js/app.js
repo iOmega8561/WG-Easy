@@ -185,24 +185,8 @@ new Vue({
       }
 
       const currentRelease = await this.api.getRelease();
-      const latestRelease = await fetch('https://wg-easy.github.io/wg-easy/changelog.json')
-        .then((res) => res.json())
-        .then((releases) => {
-          const releasesArray = Object.entries(releases).map(([version, changelog]) => ({
-            version: parseInt(version, 10),
-            changelog,
-          }));
-          releasesArray.sort((a, b) => {
-            return b.version - a.version;
-          });
-
-          return releasesArray[0];
-        });
-
-      if (currentRelease >= latestRelease.version) return;
-
       this.currentRelease = currentRelease;
-      this.latestRelease = latestRelease;
+      
     }).catch((err) => console.error(err));
   },
   computed: {
