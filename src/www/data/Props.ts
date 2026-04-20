@@ -1,5 +1,4 @@
-import Client from "./Client";
-import { Dispatch, SetStateAction, FormEvent } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 namespace Props {
     
@@ -14,6 +13,10 @@ namespace Props {
   export interface Header {
     requiresPassword: boolean
     setAuthenticated: Dispatch<SetStateAction<boolean | null>>
+  }
+
+  export interface Interface {
+    authenticated: boolean
   }
 }
 
