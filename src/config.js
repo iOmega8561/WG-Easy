@@ -23,4 +23,3 @@ module.exports.WG_PRE_UP = process.env.WG_PRE_UP || '';
 module.exports.WG_POST_UP = process.env.WG_POST_UP || '';
 module.exports.WG_PRE_DOWN = process.env.WG_PRE_DOWN || '';
 module.exports.WG_POST_DOWN = process.env.WG_POST_DOWN || '';
-module.exports.LANG = process.env.LANG || 'en';
