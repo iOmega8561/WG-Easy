@@ -29,8 +29,7 @@ const {
   WEBUI_HOST,
   RELEASE,
   PASSWORD,
-  PASSWORD_HASH,
-  LANG
+  PASSWORD_HASH
 } = require('../config');
 
 const requiresPassword = !!PASSWORD_HASH;
@@ -74,11 +73,6 @@ module.exports = class Server {
       .get('/api/release', defineEventHandler((event) => {
         setHeader(event, 'Content-Type', 'application/json');
         return RELEASE;
-      }))
-
-      .get('/api/lang', defineEventHandler((event) => {
-        setHeader(event, 'Content-Type', 'application/json');
-        return `"${LANG}"`;
       }))
 
       // Authentication
