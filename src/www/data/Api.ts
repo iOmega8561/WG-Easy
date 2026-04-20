@@ -1,9 +1,16 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
+
 import Client from "./Client";
 
 const apiClient = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' }
+});
+
+apiClient.interceptors.response.use((response) => response, (error) => {
+  toast(error.message);
+  throw error;
 });
 
 const Api = {
