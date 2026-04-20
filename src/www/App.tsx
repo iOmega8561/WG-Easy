@@ -1,5 +1,7 @@
 import React, { lazy, Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
+  import { ToastContainer } from 'react-toastify';
+
 import './styles/globals.css'
 
 // Lazy loading
@@ -26,6 +28,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Suspense fallback={<LoadingFallback />}>
       <Content />
+      <ToastContainer />
     </Suspense>
   </React.StrictMode>,
 )
