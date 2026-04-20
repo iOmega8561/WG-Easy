@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
-import './globals.css'
+import './styles/globals.css'
 
 // Lazy loading per code-splitting
 // const Home = lazy(() => import('./View'))
