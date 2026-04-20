@@ -1,17 +1,27 @@
 import Client from "../data/Client";
 import Api from "../data/Api";
 import Props from "../data/Props";
+import { useEffect, useState } from "react";
 
 const Clients: React.FC<Props.Clients> = ({
-  clients,
-  setClients
+  authenticated
 }) => {
+
+  const [clients, setClients] = useState<Client[]>([]);
+
+  useEffect(() => {
+    authenticated ? 
+      Api.getClients()
+        .then(setClients) :
+      setClients([]);
+  }, [authenticated]) 
 
   const toggleEnabled = async (client: Client) => {
     client.enabled ? Api.disableClient(client.id) : 
                      Api.enableClient(client.id);
 
-    setClients(await Api.getClients());
+    Api.getClients()
+      .then(setClients);
   }
 
   return (
