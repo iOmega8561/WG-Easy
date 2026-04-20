@@ -1,0 +1,31 @@
+{
+  "name": "Name",
+  "password": "Password",
+  "signIn": "Sign In",
+  "logout": "Logout",
+  "update": "Update",
+  "clients": "Clients",
+  "new": "New",
+  "deleteClient": "Delete Client",
+  "deleteDialog1": "Are you sure you want to delete",
+  "deleteDialog2": "This action cannot be undone.",
+  "cancel": "Cancel",
+  "create": "Create",
+  "createdOn": "Created on ",
+  "newClient": "New Client",
+  "disableClient": "Disable Client",
+  "enableClient": "Enable Client",
+  "noClients": "There are no clients yet.",
+  "noPrivKey": "This client has no known private key. Cannot create Configuration.",
+  "showQR": "Show QR Code",
+  "downloadConfig": "Download Configuration",
+  "theme": {
+    "dark": "Dark theme",
+    "light": "Light theme",
+    "auto": "Auto theme"
+  },
+  "restore": "Restore",
+  "backup": "Backup",
+  "titleRestoreConfig": "Restore your configuration",
+  "titleBackupConfig": "Backup your configuration"
+}
