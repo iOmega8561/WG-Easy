@@ -265,7 +265,8 @@ module.exports = class Server {
       }));
 
     // Static assets
-    const publicDir = '/app/www';
+    // Se la cartella dist è dentro www
+    const publicDir = resolve(__dirname, '../www/dist');
     app.use(
       defineEventHandler((event) => {
         return serveStatic(event, {
