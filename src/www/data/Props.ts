@@ -1,13 +1,15 @@
 import Client from "./Client";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, FormEvent } from "react";
 
 namespace Props {
     
     export interface Clients {
-        clients: Client[];
-        setClients: Dispatch<SetStateAction<Client[]>>
+        authenticated: boolean
     }
-    
+
+    export interface Login {
+        setAuthenticated: Dispatch<SetStateAction<boolean | null>>
+    }
 }
 
 export default Props;
