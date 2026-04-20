@@ -20,38 +20,48 @@ export default function Content() {
 
   if (authenticated === null) {
     return (
-      <div className="
-      flex h-screen 
-      items-center justify-center 
-      dark:bg-neutral-800">
+      <main>
         <div className="
-        animate-spin rounded-full 
-        h-8 w-8 
-        border-b-2 border-red-800"/>
-      </div>
+        flex h-screen 
+        items-center justify-center 
+        dark:bg-neutral-800">
+          <div className="
+          animate-spin rounded-full 
+          h-8 w-8 
+          border-b-2 border-red-800"/>
+        </div>
+      </main>
     )
   }
 
   if (!authenticated) {
-    return (<Login setAuthenticated={setAuthenticated} />)
+    return (
+      <main>
+        <Login setAuthenticated={setAuthenticated} />
+      </main>
+    )
   }
 
   return (
-    <div className="
-    min-h-screen 
-    bg-gray-50 dark:bg-neutral-800 
-    text-gray-900 dark:text-neutral-200">
+    <main>
       <div className="
-      container 
-      max-w-3xl 
-      mx-auto px-4 py-8">
-        
-        <Header requiresPassword={requiresPassword} 
-                setAuthenticated={setAuthenticated} />
-
-        <Interface authenticated={authenticated}/>
-
+      min-h-screen 
+      bg-gray-50 dark:bg-neutral-800 
+      text-gray-900 dark:text-neutral-200">
+        <div className="
+        container 
+        max-w-3xl 
+        mx-auto px-4 py-8">
+          
+          <Header 
+            requiresPassword={requiresPassword} 
+            setAuthenticated={setAuthenticated}
+          />
+  
+          <Interface authenticated={authenticated}/>
+  
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
