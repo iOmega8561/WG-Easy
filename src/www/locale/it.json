@@ -1,0 +1,31 @@
+{
+  "name": "Nome",
+  "password": "Password",
+  "signIn": "Accedi",
+  "logout": "Esci",
+  "update": "Aggiorna",
+  "clients": "Client",
+  "new": "Nuovo",
+  "deleteClient": "Elimina Client",
+  "deleteDialog1": "Sei sicuro di voler eliminare",
+  "deleteDialog2": "Questa azione non può essere annullata.",
+  "cancel": "Annulla",
+  "create": "Crea",
+  "createdOn": "Creato il ",
+  "newClient": "Nuovo Client",
+  "disableClient": "Disabilita Client",
+  "enableClient": "Abilita Client",
+  "noPrivKey": "Questo client non ha una chiave privata conosciuta. Impossibile creare la configurazione.",
+  "noClients": "Non ci sono ancora client.",
+  "showQR": "Mostra codice QR",
+  "downloadConfig": "Scarica configurazione",
+  "theme": {
+    "dark": "Tema scuro",
+    "light": "Tema chiaro",
+    "auto": "Tema automatico"
+  },
+  "restore": "Ripristina",
+  "backup": "Backup",
+  "titleRestoreConfig": "Ripristina la tua configurazione",
+  "titleBackupConfig": "Esegui il backup della tua configurazione"
+}
