@@ -49,11 +49,13 @@ const Clients: React.FC<Props.Clients> = ({
             w-10 h-6 px-1 
             rounded-full 
             cursor-pointer 
-            flex items-center 
+            flex items-center
+            transition
             ${client.enabled ? 'bg-red-800 justify-end' : 
                                'bg-gray-300 dark:bg-neutral-500 justify-start'}`}>
               <div className="
               w-4 h-4 
+              transition
               bg-white rounded-full shadow-sm"/>
             </div>
           </div>
