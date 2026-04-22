@@ -18,6 +18,12 @@ namespace Props {
   export interface Interface {
     authenticated: boolean
   }
+
+  export interface Button {
+    children: React.ReactNode
+    href?: string
+    onClick?: () => void
+  }
 }
 
 export default Props;

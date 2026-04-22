@@ -1,8 +1,9 @@
-import { Plus } from "lucide-react";
+import { Plus, DatabaseBackup, RefreshCw } from "lucide-react";
 import { translate } from "../data/Translator";
 
 import Clients from "./Clients";
 import Props from "../data/Props";
+import Button from "./Button";
 
 const Interface: React.FC<Props.Interface> = ({
   authenticated
@@ -22,13 +23,24 @@ const Interface: React.FC<Props.Interface> = ({
         text-2xl font-medium">
           {translate('clients')}
         </h2>
-       
-        <button 
-          onClick={() => { /* Implementa modale creazione */ }}
-          className="flex items-center gap-2 px-4 py-2 bg-red-800 text-white rounded hover:bg-red-700"
-        >
-          <Plus size={18} /> {translate('new')}
-        </button>
+        
+        <div className="
+        flex gap-2
+        justify-between items-center">
+
+          <Button onClick={() => { /*  */ }}>
+            <RefreshCw size={18} /> {translate('restore')}
+          </Button>
+
+          <Button onClick={() => { /*  */ }}>
+            <DatabaseBackup size={18} /> {translate('backup')}
+          </Button>
+
+          <Button onClick={() => { /*  */ }}>
+            <Plus size={18} /> {translate('new')}
+          </Button>
+        </div>
+    
       </div>
           
       <div className="divide-y dark:divide-neutral-600">
