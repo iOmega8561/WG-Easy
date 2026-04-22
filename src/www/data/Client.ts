@@ -5,7 +5,6 @@ interface Client {
   enabled: boolean;
   createdAt: Date;
   updatedAt: Date;
-  downloadableConfig: boolean;
 }
 
 export default Client;
