@@ -3,33 +3,29 @@ import Props from "../data/Props";
 
 const Button: React.FC<Props.Button> = ({
   children,
+  variant = "btn-md",
   href,
   onClick
 }) => {
+
   if (href) {
     return (
-      <a href={href} className="
-      flex items-center 
-      gap-2 px-4 py-2 
-      hover:bg-red-800 rounded
-      hover:text-white
-      border-2 border-gray-100 
-      dark:border-neutral-600 hover:border-red-800
-      transition">
+      <a href={href} className={variant}>
         {children}
       </a>
     )
   }
   
+  if (onClick) {
+    return (
+      <button onClick={onClick} type="button" className={variant}>
+        {children}
+      </button>
+    )
+  }
+
   return (
-    <button onClick={onClick} type="button" className="
-    flex items-center 
-    gap-2 px-4 py-2 
-    hover:bg-red-800 rounded
-    hover:text-white
-    border-2 border-gray-100 
-    dark:border-neutral-600 hover:border-red-800
-    transition">
+    <button type="submit" className={variant}>
       {children}
     </button>
   )

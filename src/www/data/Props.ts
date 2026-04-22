@@ -21,6 +21,7 @@ namespace Props {
 
   export interface Button {
     children: React.ReactNode
+    variant?: 'btn-lg' | 'btn-md' | 'btn-sm'
     href?: string
     onClick?: () => void
   }
