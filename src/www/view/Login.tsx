@@ -3,6 +3,7 @@ import { translate } from "../data/Translator";
 
 import Props from "../data/Props";
 import Api from "../data/Api";
+import Button from "./Button";
 
 const Login: React.FC<Props.Login> = ({
   setAuthenticated
@@ -44,14 +45,9 @@ const Login: React.FC<Props.Login> = ({
         border rounded dark:border-neutral-600 
         dark:bg-neutral-800 dark:text-white"/>
 
-        <button type="submit" className="
-        w-full p-2
-        bg-red-800 hover:bg-red-700
-        text-white
-        rounded 
-        transition">
+        <Button variant="btn-lg">
           {translate('signIn')}
-        </button>
+        </Button>
 
       </form>
     </div>
