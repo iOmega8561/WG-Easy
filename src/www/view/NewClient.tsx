@@ -1,0 +1,90 @@
+import React, { useState } from "react";
+import { Check, X } from "lucide-react";
+import { toast } from "react-toastify";
+
+import { translate } from "../data/Translator";
+import Button from "./Button";
+import Props from "../data/Props";
+import Api from "../data/Api";
+
+const NewClient: React.FC<Props.NewClient> = ({
+  setIsModalOpen
+}) => {
+
+  const [newClientName, setNewClientName] = useState("");
+
+  const handleCreateClient = async () => {
+    if (!newClientName.trim()) return;
+    
+    Api.createClient(newClientName).then(() => {
+      setNewClientName("");
+      setIsModalOpen(false);
+      toast.success(translate('clientCreated'));
+    });      
+  };
+
+  return (
+    <div className="
+    fixed inset-0 z-50 
+    flex items-center justify-center 
+    bg-black/50 backdrop-blur-sm p-4">
+      <div className="
+      bg-white dark:bg-neutral-800 
+      rounded-xl shadow-2xl 
+      w-full max-w-md 
+      overflow-hidden 
+      border dark:border-neutral-600">
+
+        <div className="p-6">
+
+          <h3 className="
+          text-xl font-semibold 
+          mb-4 dark:text-white">
+            {translate('newClient')}
+          </h3>
+          
+          <input
+            autoFocus
+            type="text"
+            placeholder={translate('name')}
+            value={newClientName}
+            onChange={(e) => setNewClientName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleCreateClient()}
+            className="
+            w-full px-4 py-2 rounded-lg 
+            border dark:border-neutral-600 
+            dark:bg-neutral-700 
+            dark:text-white 
+            focus:ring-2 focus:ring-red-500 
+            outline-none transition-all"
+          />
+
+        </div>
+
+        <div className="
+        flex
+        border-t dark:border-neutral-600">
+          <Button 
+            onClick={() => { 
+              setIsModalOpen(false); 
+              setNewClientName(""); 
+            }}
+          >
+            <X size={16} /> 
+            {translate('cancel')}
+          </Button>
+          
+          <Button 
+            onClick={handleCreateClient} 
+            disabled={!newClientName.trim()}
+          >
+            <Check size={16} /> 
+            {translate('create')}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default NewClient;

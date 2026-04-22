@@ -5,12 +5,16 @@ const Button: React.FC<Props.Button> = ({
   children,
   variant = "btn-md",
   href,
+  disabled = false,
   onClick
 }) => {
 
   if (href) {
     return (
-      <a href={href} className={variant}>
+      <a 
+        href={href} 
+        className={variant}
+      >
         {children}
       </a>
     )
@@ -18,14 +22,23 @@ const Button: React.FC<Props.Button> = ({
   
   if (onClick) {
     return (
-      <button onClick={onClick} type="button" className={variant}>
+      <button 
+        disabled={disabled} 
+        onClick={onClick} 
+        type="button" 
+        className={variant}
+      >
         {children}
       </button>
     )
   }
 
   return (
-    <button type="submit" className={variant}>
+    <button 
+      disabled={disabled} 
+      type="submit" 
+      className={variant}
+    >
       {children}
     </button>
   )

@@ -23,7 +23,12 @@ namespace Props {
     children: React.ReactNode
     variant?: 'btn-lg' | 'btn-md' | 'btn-sm'
     href?: string
+    disabled?: boolean
     onClick?: () => void
+  }
+
+  export interface NewClient {
+    setIsModalOpen: Dispatch<SetStateAction<boolean>>
   }
 }
 
