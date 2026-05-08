@@ -1,6 +1,7 @@
 import Props from "../data/Props";
 
 const QRCode: React.FC<Props.QRCode> = ({
+  dismissAction,
   clientId
 }) => {
 

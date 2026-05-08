@@ -63,7 +63,10 @@ const ClientRow: React.FC<Props.ClientRow> = ({
             <QrCode size={20}/>
 
             {isModalOpen && (
-              <QRCode clientId={client.id} />
+              <QRCode
+                dismissAction={() => setIsModalOpen(false)}
+                clientId={client.id}
+              />
             )}
           </Button>
 

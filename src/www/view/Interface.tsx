@@ -86,7 +86,9 @@ const Interface: React.FC<Props.Interface> = ({
       </div>
 
       {isModalOpen && (
-        <NewClient setIsModalOpen={setIsModalOpen} />
+        <NewClient 
+          dismissAction={() => setIsModalOpen(false)}
+        />
       )}
     </div>
   );
