@@ -6,17 +6,20 @@ import Api from "../data/Api";
 import Button from "./Button";
 
 const Login: React.FC<Props.Login> = ({
-  setAuthenticated
+  dismissAction
 }) => {
 
   const [password, setPassword] = useState('');
 
-  const handleLogin = async (e: React.FormEvent, pw: string) => {
+  const handleLogin = (
+    e: React.FormEvent, 
+    pw: string
+  ) => {
     e.preventDefault();
 
     Api.createSession(pw)
       .then(() => {
-        setAuthenticated(true);
+        dismissAction();
       })
   };
 

@@ -37,7 +37,7 @@ export default function Content() {
   if (!authenticated) {
     return (
       <main>
-        <Login setAuthenticated={setAuthenticated} />
+        <Login dismissAction={() => setAuthenticated(true)} />
       </main>
     )
   }

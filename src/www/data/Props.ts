@@ -12,8 +12,7 @@ namespace Props {
     setClients: Dispatch<SetStateAction<Client[]>>
   }
 
-  export interface Login {
-    setAuthenticated: Dispatch<SetStateAction<boolean | null>>
+  export interface Login extends Modal {
   }
 
   export interface Header {
