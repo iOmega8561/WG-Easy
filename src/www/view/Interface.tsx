@@ -1,24 +1,25 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Plus, DatabaseBackup, RefreshCw } from "lucide-react";
 import { translate } from "../data/Translator";
 import { toast } from "react-toastify";
 
 import Api from "../data/Api";
-import Clients from "./Clients";
 import Props from "../data/Props";
 import Button from "./Button";
 import NewClient from "./NewClient";
+import Client from "../data/Client";
+import ClientRow from "./ClientRow";
 
 const Interface: React.FC<Props.Interface> = ({ 
   authenticated 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [clients, setClients] = useState<Client[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleRestoreClick = () => fileInputRef.current?.click();
 
-  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -28,6 +29,11 @@ const Interface: React.FC<Props.Interface> = ({
    
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  useEffect(() => {
+    authenticated ? Api.getClients()
+                          .then(setClients) : setClients([]);
+  }, [authenticated, isModalOpen, fileInputRef]) 
 
   return (
     <div className="
@@ -43,7 +49,7 @@ const Interface: React.FC<Props.Interface> = ({
       />
 
       <div className="
-      p-4 border-b dark:border-neutral-600 
+      p-4 border-b-4 border-double dark:border-neutral-600 
       flex justify-between items-center">
         <h2 className="
         text-2xl font-medium">
@@ -71,7 +77,12 @@ const Interface: React.FC<Props.Interface> = ({
       </div>
   
       <div className="divide-y dark:divide-neutral-600">
-        <Clients authenticated={authenticated} />
+        {clients.map(client => (
+          <ClientRow 
+            client={client}
+            setClients={setClients}
+          />
+        ))}
       </div>
 
       {isModalOpen && (
