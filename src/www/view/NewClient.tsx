@@ -62,7 +62,8 @@ const NewClient: React.FC<Props.NewClient> = ({
         </div>
 
         <div className="
-        flex
+        flex justify-between
+        py-2 px-6
         border-t dark:border-neutral-600">
           <Button 
             onClick={() => { 
@@ -75,8 +76,8 @@ const NewClient: React.FC<Props.NewClient> = ({
           </Button>
           
           <Button 
-            onClick={handleCreateClient} 
             disabled={!newClientName.trim()}
+            onClick={handleCreateClient} 
           >
             <Check size={16} /> 
             {translate('create')}

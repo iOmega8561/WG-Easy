@@ -13,7 +13,7 @@ const Button: React.FC<Props.Button> = ({
     return (
       <a 
         href={href} 
-        className={variant}
+        className={`${variant} ${disabled ? 'btn-disabled' : ''}`}
       >
         {children}
       </a>
@@ -26,7 +26,7 @@ const Button: React.FC<Props.Button> = ({
         disabled={disabled} 
         onClick={onClick} 
         type="button" 
-        className={variant}
+        className={`${variant} ${disabled ? 'btn-disabled' : ''}`}
       >
         {children}
       </button>
@@ -37,7 +37,7 @@ const Button: React.FC<Props.Button> = ({
     <button 
       disabled={disabled} 
       type="submit" 
-      className={variant}
+      className={`${variant} ${disabled ? 'btn-disabled' : ''}`}
     >
       {children}
     </button>
