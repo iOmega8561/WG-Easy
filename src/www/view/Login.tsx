@@ -22,33 +22,29 @@ const Login: React.FC<Props.Login> = ({
 
   return (
     <div className="
-    min-h-screen flex
-    bg-gray-50 dark:bg-neutral-800 
-    items-center justify-center">
-      <form onSubmit={(e) => {handleLogin(e, password)}} className="
-      bg-white dark:bg-neutral-700 
-      p-8 rounded-lg 
-      shadow-md w-80">
-        
+    bg-white dark:bg-neutral-700 
+    modal-container">
+      <form 
+        onSubmit={(e) => {handleLogin(e, password)}} 
+        className="modal-content p-6"
+      >
         <h1 className="
         text-3xl font-medium dark:text-white
         mb-6 text-center">
           WireGuard
         </h1>
         
-        <input type="password" 
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder={translate('password')}
-        className="
-        w-full p-2 mb-4 
-        border rounded dark:border-neutral-600 
-        dark:bg-neutral-800 dark:text-white"/>
+        <input 
+          type="password" 
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={translate('password')}
+          className="text-field mb-4"
+        />
 
         <Button variant="btn-lg">
           {translate('signIn')}
         </Button>
-
       </form>
     </div>
   );
