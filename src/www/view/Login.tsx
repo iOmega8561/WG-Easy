@@ -5,6 +5,8 @@ import Props from "../data/Props";
 import Api from "../data/Api";
 import Button from "./Button";
 
+import wgLogo from "../img/logo.png"
+
 const Login: React.FC<Props.Login> = ({
   dismissAction
 }) => {
@@ -32,9 +34,16 @@ const Login: React.FC<Props.Login> = ({
         className="modal-content p-6"
       >
         <h1 className="
+        flex items-center justify-center
         text-3xl font-medium dark:text-white
         mb-6 text-center">
-          WireGuard
+          <img 
+            src={wgLogo}
+            width="24"
+            className="mr-2"
+          />
+          
+          WG-Easy
         </h1>
         
         <input 
