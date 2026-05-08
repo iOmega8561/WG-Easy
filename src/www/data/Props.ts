@@ -38,6 +38,10 @@ namespace Props {
     active: boolean
     onClick: () => void
   }
+
+  export interface QRCode {
+    clientId: string
+  }
 }
 
 export default Props;
