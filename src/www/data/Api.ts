@@ -55,10 +55,6 @@ const Api = {
   updateClientAddress: (clientId: string, address: string): Promise<Response.Success> => 
     apiClient.put(`/wireguard/client/${clientId}/address`, { address }).then(res => res.data),
 
-  getClientQRCode: (clientId: string): Promise<string> => 
-    apiClient.get(`/wireguard/client/${clientId}/qrcode.svg`, { responseType: 'text' })
-      .then(res => res.data),
-
   downloadConfiguration: (clientId: string) => {
     window.location.href = `/api/wireguard/client/${clientId}/configuration`;
   },

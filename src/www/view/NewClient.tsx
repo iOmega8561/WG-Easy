@@ -24,17 +24,8 @@ const NewClient: React.FC<Props.NewClient> = ({
   };
 
   return (
-    <div className="
-    fixed inset-0 z-50 
-    flex items-center justify-center 
-    bg-black/50 backdrop-blur-sm p-4">
-      <div className="
-      bg-white dark:bg-neutral-800 
-      rounded-xl shadow-2xl 
-      w-full max-w-md 
-      overflow-hidden 
-      border dark:border-neutral-600">
-
+    <div className="modal-container">
+      <div className="modal-content">
         <div className="p-6">
 
           <h3 className="
