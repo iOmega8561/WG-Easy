@@ -7,7 +7,7 @@ import Button from "./Button";
 import Props from "../data/Props";
 import Api from "../data/Api";
 
-const NewClient: React.FC<Props.NewClient> = ({
+const NewClient: React.FC<Props.Modal> = ({
   dismissAction
 }) => {
 
