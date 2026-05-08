@@ -8,12 +8,14 @@ import Toggle from "./Toggle";
 import Button from "./Button";
 import { translate } from "../data/Translator";
 import QRCode from "./QRCode";
+import Dialog from "./Dialog";
 
 const ClientRow: React.FC<Props.ClientRow> = ({
   client,
   setClients
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQRCodeShown, setIsQRCodeShown] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const toggleEnabled = () => {
     client.enabled ? Api.disableClient(client.id) : 
@@ -58,13 +60,13 @@ const ClientRow: React.FC<Props.ClientRow> = ({
 
           <Button
             variant="btn-sm"
-            onClick={() => setIsModalOpen(!isModalOpen)}
+            onClick={() => setIsQRCodeShown(!isQRCodeShown)}
           >
             <QrCode size={20}/>
 
-            {isModalOpen && (
+            {isQRCodeShown && (
               <QRCode
-                dismissAction={() => setIsModalOpen(false)}
+                dismissAction={() => setIsQRCodeShown(false)}
                 clientId={client.id}
               />
             )}
@@ -79,12 +81,19 @@ const ClientRow: React.FC<Props.ClientRow> = ({
 
           <Button
             variant="btn-sm"
-            onClick={deleteClient}
+            onClick={() => setIsDialogOpen(true)}
           >
             <Trash2 size={20}/>
           </Button>
         </div>
       </div>
+
+      {isDialogOpen && (
+        <Dialog
+          dismissAction={() => setIsDialogOpen(false)}
+          onConfirm={deleteClient}
+        />
+      )}
     </section>
   );
 }
