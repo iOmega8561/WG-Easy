@@ -5,7 +5,7 @@ import Props from "../data/Props";
 import Api from "../data/Api";
 import Button from "./Button";
 
-import wgLogo from "../img/logo.png"
+import wgLogo from "../img/logo.png";
 
 const Login: React.FC<Props.Login> = ({
   dismissAction

@@ -4,7 +4,7 @@ import { translate } from "../data/Translator";
 import Api from "../data/Api";
 import Props from "../data/Props"
 
-import wgLogo from "../img/logo.png"
+import wgLogo from "../img/logo.png";
 
 const Header: React.FC<Props.Header> = ({
   requiresPassword,
