@@ -58,7 +58,7 @@ const ClientRow: React.FC<Props.ClientRow> = ({
 
           <Button
             variant="btn-sm"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsModalOpen(!isModalOpen)}
           >
             <QrCode size={20}/>
 
