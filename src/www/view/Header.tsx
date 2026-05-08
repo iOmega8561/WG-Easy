@@ -4,6 +4,8 @@ import { translate } from "../data/Translator";
 import Api from "../data/Api";
 import Props from "../data/Props"
 
+import wgLogo from "../img/logo.png"
+
 const Header: React.FC<Props.Header> = ({
   requiresPassword,
   setAuthenticated
@@ -21,8 +23,15 @@ const Header: React.FC<Props.Header> = ({
     flex mb-8
     justify-between items-center">
       <h1 className="
+      flex items-center
       text-4xl font-medium">
-        WireGuard
+        <img 
+          src={wgLogo}
+          width="32"
+          className="mr-4"
+        />
+
+        WG-Easy
       </h1>
 
       {requiresPassword && (
