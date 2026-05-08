@@ -41,13 +41,7 @@ const NewClient: React.FC<Props.NewClient> = ({
             value={newClientName}
             onChange={(e) => setNewClientName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCreateClient()}
-            className="
-            w-full px-4 py-2 rounded-lg 
-            border dark:border-neutral-600 
-            dark:bg-neutral-700 
-            dark:text-white 
-            focus:ring-2 focus:ring-red-500 
-            outline-none transition-all"
+            className="text-field"
           />
 
         </div>
