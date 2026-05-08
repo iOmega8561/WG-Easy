@@ -8,7 +8,7 @@ import Props from "../data/Props";
 import Api from "../data/Api";
 
 const NewClient: React.FC<Props.NewClient> = ({
-  setIsModalOpen
+  dismissAction
 }) => {
 
   const [newClientName, setNewClientName] = useState("");
@@ -18,7 +18,7 @@ const NewClient: React.FC<Props.NewClient> = ({
     
     Api.createClient(newClientName).then(() => {
       setNewClientName("");
-      setIsModalOpen(false);
+      dismissAction();
       toast.success(translate('clientCreated'));
     });      
   };
@@ -58,7 +58,7 @@ const NewClient: React.FC<Props.NewClient> = ({
         border-t dark:border-neutral-600">
           <Button 
             onClick={() => { 
-              setIsModalOpen(false); 
+              dismissAction(); 
               setNewClientName(""); 
             }}
           >

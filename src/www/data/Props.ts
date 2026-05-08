@@ -3,6 +3,10 @@ import Client from "./Client";
 
 namespace Props {
     
+  export interface Modal {
+    dismissAction: () => void
+  }
+
   export interface ClientRow {
     client: Client,
     setClients: Dispatch<SetStateAction<Client[]>>
@@ -29,8 +33,7 @@ namespace Props {
     onClick?: () => void
   }
 
-  export interface NewClient {
-    setIsModalOpen: Dispatch<SetStateAction<boolean>>
+  export interface NewClient extends Modal {
   }
 
   export interface Toggle {
@@ -39,7 +42,7 @@ namespace Props {
     onClick: () => void
   }
 
-  export interface QRCode {
+  export interface QRCode extends Modal {
     clientId: string
   }
 }
