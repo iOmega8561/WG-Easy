@@ -30,6 +30,12 @@ namespace Props {
   export interface NewClient {
     setIsModalOpen: Dispatch<SetStateAction<boolean>>
   }
+
+  export interface Toggle {
+    disabled?: boolean
+    active: boolean
+    onClick: () => void
+  }
 }
 
 export default Props;
