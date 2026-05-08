@@ -7,7 +7,7 @@ import Button from "./Button";
 
 import wgLogo from "../img/logo.png";
 
-const Login: React.FC<Props.Login> = ({
+const Login: React.FC<Props.Modal> = ({
   dismissAction
 }) => {
 

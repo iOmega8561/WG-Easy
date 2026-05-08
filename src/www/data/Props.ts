@@ -2,9 +2,12 @@ import { Dispatch, SetStateAction } from "react";
 import Client from "./Client";
 
 namespace Props {
-    
-  export interface Modal {
-    dismissAction: () => void
+  export interface Button {
+    children: React.ReactNode
+    variant?: 'btn-lg' | 'btn-md' | 'btn-sm'
+    href?: string
+    disabled?: boolean
+    onClick?: () => void
   }
 
   export interface ClientRow {
@@ -12,7 +15,8 @@ namespace Props {
     setClients: Dispatch<SetStateAction<Client[]>>
   }
 
-  export interface Login extends Modal {
+  export interface Dialog extends Modal {
+    onConfirm: () => void
   }
 
   export interface Header {
@@ -24,25 +28,18 @@ namespace Props {
     authenticated: boolean
   }
 
-  export interface Button {
-    children: React.ReactNode
-    variant?: 'btn-lg' | 'btn-md' | 'btn-sm'
-    href?: string
-    disabled?: boolean
-    onClick?: () => void
+  export interface Modal {
+    dismissAction: () => void
   }
 
-  export interface NewClient extends Modal {
+  export interface QRCode extends Modal {
+    clientId: string
   }
 
   export interface Toggle {
     disabled?: boolean
     active: boolean
     onClick: () => void
-  }
-
-  export interface QRCode extends Modal {
-    clientId: string
   }
 }
 
