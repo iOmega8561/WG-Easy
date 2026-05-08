@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 import { toast } from "react-toastify";
 
 import { translate } from "../data/Translator";
@@ -29,8 +29,11 @@ const NewClient: React.FC<Props.Modal> = ({
         <div className="p-6">
 
           <h3 className="
+          flex items-center gap-4
           text-xl font-semibold 
           mb-4 dark:text-white">
+            <Plus size={24}/>
+
             {translate('newClient')}
           </h3>
           
@@ -49,6 +52,7 @@ const NewClient: React.FC<Props.Modal> = ({
         <div className="
         flex justify-between
         py-2 px-6
+        bg-gray-50 dark:bg-neutral-900
         border-t dark:border-neutral-600">
           <Button 
             onClick={() => { 

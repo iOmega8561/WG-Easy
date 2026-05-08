@@ -7,7 +7,7 @@
   "clients": "Clients",
   "new": "New",
   "deleteClient": "Delete Client",
-  "deleteDialog1": "Are you sure you want to delete",
+  "deleteDialog1": "Are you sure you want to delete the client?",
   "deleteDialog2": "This action cannot be undone.",
   "cancel": "Cancel",
   "create": "Create",
