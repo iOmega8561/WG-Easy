@@ -5,6 +5,7 @@
   "logout": "Logout",
   "clients": "Clients",
   "new": "New",
+  "newClient": "New Client",
   "deleteClient": "Delete Client",
   "deleteDialog1": "Are you sure you want to delete the client?",
   "deleteDialog2": "This action cannot be undone.",
