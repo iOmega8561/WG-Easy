@@ -1,6 +1,6 @@
-import { Download, Pencil, QrCode, Trash2 } from "lucide-react";
+import { Download, QrCode, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import Api from "../data/Api";
 import Props from "../data/Props";
