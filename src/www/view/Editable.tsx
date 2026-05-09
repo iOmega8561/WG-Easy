@@ -6,6 +6,7 @@ import Button from "./Button";
 
 const Editable: React.FC<Props.Editable> = ({
   onConfirm,
+  textClass,
   value
 }) => {
 
@@ -21,7 +22,7 @@ const Editable: React.FC<Props.Editable> = ({
   const save = () => {
     if (isEditing) {
       setIsEditing(false);
-      onConfirm(editValue);
+      if (editValue != value) onConfirm(editValue);
       setEditValue('');
     }
   };
@@ -44,13 +45,13 @@ const Editable: React.FC<Props.Editable> = ({
             if (e.key === 'Enter') save();
             if (e.key === 'Escape') cancelEditing();
           }}
-          className="text-field w-auto px-2 py-1"
+          className={`text-field w-auto px-2 py-1 ${textClass}`}
         />
       ) : (
-        <div className="
-        font-medium
+        <div className={`
+        ${textClass}
         group relative cursor-pointer
-        flex items-center gap-2">
+        flex items-center gap-2`}>
           {value}
 
           <div className="

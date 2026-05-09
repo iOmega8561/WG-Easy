@@ -40,6 +40,7 @@ const ClientRow: React.FC<Props.ClientRow> = ({
         <div>
           <Editable 
             value={client.name} 
+            textClass="text-medium"
             onConfirm={(newName) => {
               Api.updateClientName(client.id, newName)
                 .then(() => triggerUpdate("clientUpdated"))
@@ -47,7 +48,8 @@ const ClientRow: React.FC<Props.ClientRow> = ({
           />
 
           <Editable 
-            value={client.address} 
+            value={client.address}
+            textClass="text-sm text-gray-500"
             onConfirm={(newAddr) => {
               Api.updateClientAddress(client.id, newAddr)
                 .then(() => triggerUpdate("clientUpdated"))
