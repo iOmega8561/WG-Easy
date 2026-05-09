@@ -1,43 +1,38 @@
-# As a workaround we have to build on nodejs 18
-# nodejs 20 hangs on build with armv6/armv7
-FROM docker.io/library/node:lts-alpine AS build_node_modules
+FROM docker.io/library/node:alpine as base
 
-# Update npm to latest
-RUN npm install -g npm@latest
+# Build-time arguments
+ARG REPO_URL
 
-# Copy Web UI
-COPY src /app
-WORKDIR /app
-RUN npm ci --omit=dev &&\
-    mv node_modules /node_modules
+# Metadata according to OCI standards
+LABEL org.opencontainers.image.title="WG-Easy"
+LABEL org.opencontainers.image.description="Easiest way to configure WireGuard"
+LABEL org.opencontainers.image.authors="Giuseppe Rocco"
+LABEL org.opencontainers.image.licenses="CC BY-NC-SA 4.0"
+LABEL org.opencontainers.image.source=$REPO_URL
 
-# Copy build result to a new image.
-# This saves a lot of disk space.
-FROM docker.io/library/node:lts-alpine
-COPY --from=build_node_modules /app /app
+# 1. wireguard-tools: provides wg and wg-quick commands for WireGuard
+# 2. cleanup: remove temporary files to keep image lean
+# 3. create directories for configuration and application
+# 4. create wrapper script /bin/wgpw for password management
+RUN apk update && \
+    apk add --no-cache --update \
+    wireguard-tools && \
+    rm -rf /tmp/* /var/tmp/* /var/cache/apk/* && \
+    install -o 1000 -g 1000 -d /opt/wg-easy -m 700 && \
+    install -o 1000 -g 1000 -d /opt/wg -m 700 && \
+    echo -e '#!/bin/sh\nset -e\nnode /opt/wg-easy/wgpw.mjs "$@"' > /bin/wgpw && \
+    chmod +x /bin/wgpw
 
-# Move node_modules one directory up, so during development
-# we don't have to mount it in a volume.
-# This results in much faster reloading!
-#
-# Also, some node_modules might be native, and
-# the architecture & OS of your development machine might differ
-# than what runs inside of docker.
-COPY --from=build_node_modules /node_modules /node_modules
+COPY --chown=node ./src /opt/wg-easy
+WORKDIR /opt/wg-easy
 
-# Copy the needed wg-password scripts
-COPY --from=build_node_modules /app/wgpw.sh /bin/wgpw
-RUN chmod +x /bin/wgpw
-
-# Install Linux packages
-RUN apk add --no-cache \
-    dumb-init \
-    wireguard-tools
-
-# Set Environment
-ENV DEBUG=Server,WireGuard
-
-# Run Web UI
-WORKDIR /app
+# Expose the WG-Easy web management interface
 EXPOSE 3000/tcp
-CMD ["/usr/bin/dumb-init", "node", "server.js"]
+ENV WG_PATH /opt/wg
+
+# Switch to non-root user for security
+USER node
+# Install Node.js dependencies
+RUN npm install
+
+ENTRYPOINT ["/usr/local/bin/npm", "run", "serve"]
