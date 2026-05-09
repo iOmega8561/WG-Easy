@@ -13,48 +13,25 @@ import Editable from "./Editable";
 
 const ClientRow: React.FC<Props.ClientRow> = ({
   client,
-  setClients
+  onUpdate
 }) => {
   const [isQRCodeShown, setIsQRCodeShown] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const toggleEnabled = () => {
-    client.enabled ? Api.disableClient(client.id) : 
-                     Api.enableClient(client.id);
-    Api.getClients()
-      .then((clients) => {setClients(clients)});
+  const triggerUpdate = (t: string) => {
+    onUpdate();
+    toast.success(translate(t));
   }
 
-  const deleteClient = () => {
-    Api.deleteClient(client.id)
-      .then(() => {
-        Api.getClients()
-          .then((clients) => {setClients(clients)})
-        
-        toast.success(translate('clientDeleted'));
-      })
+  const toggleEnabled = () => {
+    client.enabled ? 
+      Api.disableClient(client.id) 
+        .then(() => triggerUpdate("clientUpdated"))  
+      : 
+      Api.enableClient(client.id)
+        .then(() => triggerUpdate("clientUpdated"))
   }
   
-  const updateClientName = (newName: string) => {
-    Api.updateClientName(client.id, newName)
-      .then(() => {
-        Api.getClients()
-          .then((clients) => {setClients(clients)})
-
-        toast.success(translate('clientUpdated'));
-      })
-  }
-
-  const updateClientAddress = (newAddr: string) => {
-    Api.updateClientAddress(client.id, newAddr)
-      .then(() => {
-        Api.getClients()
-          .then((clients) => {setClients(clients)})
-
-        toast.success(translate('clientUpdated'));
-      })
-  }
-
   return (
     <section>
       <div key={client.id} className="
@@ -63,12 +40,18 @@ const ClientRow: React.FC<Props.ClientRow> = ({
         <div>
           <Editable 
             value={client.name} 
-            onConfirm={updateClientName} 
+            onConfirm={(newName) => {
+              Api.updateClientName(client.id, newName)
+                .then(() => triggerUpdate("clientUpdated"))
+            }} 
           />
 
           <Editable 
             value={client.address} 
-            onConfirm={updateClientAddress} 
+            onConfirm={(newAddr) => {
+              Api.updateClientAddress(client.id, newAddr)
+                .then(() => triggerUpdate("clientUpdated"))
+            }} 
           />
         </div>
 
@@ -112,7 +95,10 @@ const ClientRow: React.FC<Props.ClientRow> = ({
       {isDialogOpen && (
         <Dialog
           dismissAction={() => setIsDialogOpen(false)}
-          onConfirm={deleteClient}
+          onConfirm={() => {
+            Api.deleteClient(client.id)
+              .then(() => triggerUpdate("clientDeleted"))
+          }}
         />
       )}
     </section>

@@ -12,7 +12,7 @@ namespace Props {
 
   export interface ClientRow {
     client: Client,
-    setClients: Dispatch<SetStateAction<Client[]>>
+    onUpdate: () => void
   }
 
   export interface Dialog extends Modal {
