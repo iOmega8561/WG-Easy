@@ -17,13 +17,12 @@ const Interface: React.FC<Props.Interface> = ({
   const [clients, setClients] = useState<Client[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleRestoreClick = () => fileInputRef.current?.click();
-
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     Api.restoreConfiguration(file).then(() => {
+      Api.getClients().then(setClients)
       toast.success(translate('restoreSuccess'));
     })
    
@@ -59,7 +58,7 @@ const Interface: React.FC<Props.Interface> = ({
         <div className="
         flex gap-2 
         items-center">
-          <Button onClick={handleRestoreClick}>
+          <Button onClick={fileInputRef.current?.click}>
             <RefreshCw size={18} /> 
             {translate('restore')}
           </Button>
@@ -80,7 +79,9 @@ const Interface: React.FC<Props.Interface> = ({
         {clients.map(client => (
           <ClientRow 
             client={client}
-            setClients={setClients}
+            onUpdate={() => {
+              Api.getClients().then(setClients)
+            }}
           />
         ))}
       </div>
