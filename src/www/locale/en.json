@@ -11,6 +11,7 @@
   "deleteDialog2": "This action cannot be undone.",
   "clientCreated": "New client has been created",
   "clientDeleted": "Client has been deleted",
+  "clientUpdated": "Client has been updated",
   "restoreSuccess": "Configuration has been restored",
   "cancel": "Cancel",
   "create": "Create",

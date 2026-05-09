@@ -1,6 +1,6 @@
-import { Download, QrCode, Trash2 } from "lucide-react";
+import { Download, Pencil, QrCode, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import Api from "../data/Api";
 import Props from "../data/Props";
@@ -9,6 +9,7 @@ import Button from "./Button";
 import { translate } from "../data/Translator";
 import QRCode from "./QRCode";
 import Dialog from "./Dialog";
+import Editable from "./Editable";
 
 const ClientRow: React.FC<Props.ClientRow> = ({
   client,
@@ -33,6 +34,26 @@ const ClientRow: React.FC<Props.ClientRow> = ({
         toast.success(translate('clientDeleted'));
       })
   }
+  
+  const updateClientName = (newName: string) => {
+    Api.updateClientName(client.id, newName)
+      .then(() => {
+        Api.getClients()
+          .then((clients) => {setClients(clients)})
+
+        toast.success(translate('clientUpdated'));
+      })
+  }
+
+  const updateClientAddress = (newAddr: string) => {
+    Api.updateClientAddress(client.id, newAddr)
+      .then(() => {
+        Api.getClients()
+          .then((clients) => {setClients(clients)})
+
+        toast.success(translate('clientUpdated'));
+      })
+  }
 
   return (
     <section>
@@ -40,15 +61,15 @@ const ClientRow: React.FC<Props.ClientRow> = ({
       p-4 flex 
       justify-between items-center">
         <div>
-          <div className="
-          font-medium">
-            {client.name}
-          </div>
+          <Editable 
+            value={client.name} 
+            onConfirm={updateClientName} 
+          />
 
-          <div className="
-          text-sm text-gray-500">
-            {client.address}
-          </div>
+          <Editable 
+            value={client.address} 
+            onConfirm={updateClientAddress} 
+          />
         </div>
 
         <div className="

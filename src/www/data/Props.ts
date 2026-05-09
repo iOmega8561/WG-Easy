@@ -19,6 +19,11 @@ namespace Props {
     onConfirm: () => void
   }
 
+  export interface Editable {
+    value: string,
+    onConfirm: (newValue: string) => void
+  }
+
   export interface Header {
     requiresPassword: boolean
     setAuthenticated: Dispatch<SetStateAction<boolean | null>>
