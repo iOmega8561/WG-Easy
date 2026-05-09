@@ -76,14 +76,20 @@ const Interface: React.FC<Props.Interface> = ({
       </div>
   
       <div className="divide-y dark:divide-neutral-600">
-        {clients.map(client => (
+        {clients.length === 0 ? (
+          <div className="
+          flex p-6 justify-center 
+          text-lg">
+            {translate("noClients")}
+          </div>
+        ) : (clients.map(client => (
           <ClientRow 
             client={client}
             onUpdate={() => {
               Api.getClients().then(setClients)
             }}
           />
-        ))}
+        )))}
       </div>
 
       {isModalOpen && (
