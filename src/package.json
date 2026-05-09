@@ -6,8 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "vite build",
-    "serve": "npm run build && NODE_ENV=production node server.js",
-    "serve-with-password": "PASSWORD=wg npm run serve"
+    "serve": "npm run build && NODE_ENV=production node server.js"
   },
   "author": "Giuseppe Rocco",
   "license": "CC BY-NC-SA 4.0",
