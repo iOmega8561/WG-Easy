@@ -2,7 +2,6 @@ import React from "react";
 import Props from "../data/Props";
 
 const Toggle: React.FC<Props.Toggle> = ({
-  disabled = false,
   active,
   onClick
 }) => {
