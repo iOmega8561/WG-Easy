@@ -9,7 +9,7 @@
   "deleteClient": "Delete Client",
   "deleteDialog1": "Are you sure you want to delete the client?",
   "deleteDialog2": "This action cannot be undone.",
-  "clientCreated": "New client has been created",
+  "clientCreated": "New client {{c}} has been created",
   "clientDeleted": "Client {{c}} has been deleted",
   "clientUpdated": "Client {{c}} has been updated",
   "clientDisabled": "Client {{c}} has been disabled",

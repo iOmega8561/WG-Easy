@@ -10,16 +10,16 @@ import Api from "../data/Api";
 const NewClient: React.FC<Props.Modal> = ({
   dismissAction
 }) => {
-
   const [newClientName, setNewClientName] = useState("");
 
   const handleCreateClient = async () => {
     if (!newClientName.trim()) return;
     
     Api.createClient(newClientName).then(() => {
+      let newName = newClientName;
       setNewClientName("");
       dismissAction();
-      toast.success(translate('clientCreated'));
+      toast.success(translate('clientCreated', {c: newName}));
     });      
   };
 
