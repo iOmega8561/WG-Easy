@@ -48,7 +48,10 @@ const Dialog: React.FC<Props.Dialog> = ({
           </Button>
 
           <Button 
-            onClick={onConfirm}
+            onClick={() => { 
+              onConfirm();
+              dismissAction();
+            }}
           >
             <Check size={16} /> 
             {translate("deleteClient")}
