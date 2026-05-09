@@ -33,7 +33,7 @@ const Editable: React.FC<Props.Editable> = ({
   };
 
   return (
-    <div>
+    <div className="max-sm:w-32">
       {isEditing ? (
         <input
           ref={inputRef}
@@ -45,7 +45,7 @@ const Editable: React.FC<Props.Editable> = ({
             if (e.key === 'Enter') save();
             if (e.key === 'Escape') cancelEditing();
           }}
-          className={`text-field w-auto px-2 py-1 ${textClass}`}
+          className={`text-field my-2 px-2 py-1 ${textClass}`}
         />
       ) : (
         <div className={`

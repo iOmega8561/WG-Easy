@@ -58,19 +58,28 @@ const Interface: React.FC<Props.Interface> = ({
         <div className="
         flex gap-2 
         items-center">
-          <Button onClick={fileInputRef.current?.click}>
-            <RefreshCw size={18} /> 
-            {translate('restore')}
+          <Button onClick={() => fileInputRef.current?.click()}>
+            <RefreshCw size={18} />
+
+            <span className="max-sm:hidden">
+              {translate('restore')}
+            </span>
           </Button>
 
-          <Button onClick={() => Api.downloadBackup()}>
+          <Button onClick={Api.downloadBackup}>
             <DatabaseBackup size={18} /> 
-            {translate('backup')}
+
+            <span className="max-sm:hidden">
+              {translate('backup')}
+            </span>
           </Button>
 
           <Button onClick={() => setIsModalOpen(true)}>
             <Plus size={18} /> 
-            {translate('new')}
+
+            <span className="max-sm:hidden">
+              {translate('new')}
+            </span>
           </Button>
         </div>
       </div>
