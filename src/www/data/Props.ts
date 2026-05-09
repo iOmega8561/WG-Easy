@@ -21,6 +21,7 @@ namespace Props {
 
   export interface Editable {
     value: string,
+    textClass: string,
     onConfirm: (newValue: string) => void
   }
 
