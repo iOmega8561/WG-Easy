@@ -48,11 +48,12 @@ const Editable: React.FC<Props.Editable> = ({
           className={`text-field my-2 px-2 py-1 ${textClass}`}
         />
       ) : (
-        <div className={`
-        ${textClass}
+        <div className="
         group relative cursor-pointer
-        flex items-center gap-2`}>
-          {value}
+        flex items-center gap-2">
+          <span className={textClass}>
+            {value}
+          </span>
 
           <div className="
           opacity-0 group-hover:opacity-100 
@@ -61,7 +62,7 @@ const Editable: React.FC<Props.Editable> = ({
               variant="btn-sm"
               onClick={startEditing}
             >
-              <Pencil size={18} />
+              <Pencil size={14} />
             </Button>
           </div>
         </div>
