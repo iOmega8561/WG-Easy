@@ -32,10 +32,9 @@ This version does **not run WireGuard inside the container**, ideal for setups w
 ```bash
 docker|podman run -d \
   --name=wg-easy \
-  -e LANG=en \
   -e WG_HOST=<YOUR_SERVER_IP> \
   -e PASSWORD_HASH=<YOUR_ADMIN_PASSWORD_HASH> \
-  -v ~/.wg-easy:/etc/wireguard \
+  -v ~/.wg-easy:/opt/wg \
   -p 3000:3000/tcp \
   ghcr.io/iOmega8561/wg-easy:latest
 ```
