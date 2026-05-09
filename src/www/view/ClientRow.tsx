@@ -20,18 +20,18 @@ const ClientRow: React.FC<Props.ClientRow> = ({
 
   const triggerUpdate = (t: string) => {
     onUpdate();
-    toast.success(translate(t));
+    toast.success(translate(t, {c: client.name}));
   }
 
   const toggleEnabled = () => {
     client.enabled ? 
       Api.disableClient(client.id) 
-        .then(() => triggerUpdate("clientUpdated"))  
+        .then(() => triggerUpdate("clientDisabled"))  
       : 
       Api.enableClient(client.id)
-        .then(() => triggerUpdate("clientUpdated"))
+        .then(() => triggerUpdate("clientEnabled"))
   }
-  
+
   return (
     <section>
       <div key={client.id} className="
