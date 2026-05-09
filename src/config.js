@@ -1,12 +1,11 @@
 'use strict';
 
-const { release: { version } } = require('./package.json');
+const { version } = require('./package.json');
 
 module.exports.RELEASE = version;
 module.exports.PORT = process.env.PORT || '3000';
 module.exports.WEBUI_HOST = process.env.WEBUI_HOST || '0.0.0.0';
 /** This is only kept for migration purpose. DO NOT USE! */
-module.exports.PASSWORD = process.env.PASSWORD;
 module.exports.PASSWORD_HASH = process.env.PASSWORD_HASH;
 module.exports.WG_PATH = process.env.WG_PATH || '/etc/wireguard/';
 module.exports.WG_HOST = process.env.WG_HOST;
@@ -23,4 +22,3 @@ module.exports.WG_PRE_UP = process.env.WG_PRE_UP || '';
 module.exports.WG_POST_UP = process.env.WG_POST_UP || '';
 module.exports.WG_PRE_DOWN = process.env.WG_PRE_DOWN || '';
 module.exports.WG_POST_DOWN = process.env.WG_POST_DOWN || '';
-module.exports.LANG = process.env.LANG || 'en';
