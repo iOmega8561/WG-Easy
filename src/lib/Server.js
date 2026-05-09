@@ -28,9 +28,7 @@ const {
   PORT,
   WEBUI_HOST,
   RELEASE,
-  PASSWORD,
-  PASSWORD_HASH,
-  LANG
+  PASSWORD_HASH
 } = require('../config');
 
 const requiresPassword = !!PASSWORD_HASH;
@@ -74,11 +72,6 @@ module.exports = class Server {
       .get('/api/release', defineEventHandler((event) => {
         setHeader(event, 'Content-Type', 'application/json');
         return RELEASE;
-      }))
-
-      .get('/api/lang', defineEventHandler((event) => {
-        setHeader(event, 'Content-Type', 'application/json');
-        return `"${LANG}"`;
       }))
 
       // Authentication
@@ -265,7 +258,8 @@ module.exports = class Server {
       }));
 
     // Static assets
-    const publicDir = '/app/www';
+    // Se la cartella dist è dentro www
+    const publicDir = resolve(__dirname, '../www/dist');
     app.use(
       defineEventHandler((event) => {
         return serveStatic(event, {
@@ -294,10 +288,6 @@ module.exports = class Server {
         });
       }),
     );
-
-    if (PASSWORD) {
-      throw new Error('DO NOT USE PASSWORD ENVIRONMENT VARIABLE. USE PASSWORD_HASH INSTEAD.\nSee https://github.com/wg-easy/wg-easy/blob/v14/How_to_generate_an_bcrypt_hash.md');
-    }
 
     createServer(toNodeListener(app)).listen(PORT, WEBUI_HOST);
     debug(`Listening on http://${WEBUI_HOST}:${PORT}`);
