@@ -1,34 +1,29 @@
-import React, { lazy, Suspense } from 'react'
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify'
+import Utility from './data/Utility'
+import Content from './view/Content'
 
 import './styles/globals.css'
 
-// Lazy loading
-const Content = lazy(() => import('./view/Content'))
-
-// Loading fallback component
-const LoadingFallback: React.FC = () => (
-  <div className="
-  min-h-screen flex 
-  items-center justify-center 
-  bg-white">
-    <div className="text-center">
-      <div className="
-      w-16 h-16 
-      border-4 border-primary border-t-transparent 
-      rounded-full 
-      animate-spin 
-      mx-auto mb-4"/>
-    </div>
-  </div>
-)
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Suspense fallback={<LoadingFallback />}>
+function App() {
+  const theme = Utility.useIsDark()
+  
+  return (
+    <StrictMode>
+      
       <Content />
-      <ToastContainer />
-    </Suspense>
-  </React.StrictMode>
-)
+      
+      <ToastContainer
+        autoClose={2000}
+        theme={theme} 
+      />
+    
+    </StrictMode>
+  )
+}
+
+const docRoot = document.getElementById('root')
+if (docRoot !== null) {
+  ReactDOM.createRoot(docRoot).render(<App />)
+}
