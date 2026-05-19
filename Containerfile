@@ -36,6 +36,6 @@ ENV WG_PATH /opt/wg
 # Switch to non-root user
 USER node
 # Install Node.js dependencies
-RUN npm install
+RUN npm install && npm run build
 
 ENTRYPOINT ["/usr/local/bin/npm", "run", "serve"]
