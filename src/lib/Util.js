@@ -77,4 +77,24 @@ module.exports = class Util {
     });
   }
 
+  static generateDefaultNft = (net, port, dev) => {  
+    const postUp = [
+      `nft 'add table inet wg_filter_${dev}'`,
+      `nft 'add chain inet wg_filter_${dev} input { type filter hook input priority filter; }'`,
+      `nft 'add chain inet wg_filter_${dev} forward { type filter hook forward priority filter; }'`,
+      `nft 'add rule inet wg_filter_${dev} input udp dport ${port} accept'`,
+      `nft 'add rule inet wg_filter_${dev} forward iifname "${dev}" accept'`,
+      `nft 'add rule inet wg_filter_${dev} forward oifname "${dev}" accept'`,
+      `nft 'add table ip wg_nat_${dev}'`,
+      `nft 'add chain ip wg_nat_${dev} postrouting { type nat hook postrouting priority srcnat; }'`,
+      `nft 'add rule ip wg_nat_${dev} postrouting ip saddr ${net} masquerade'`
+    ].join('; ');
+  
+    const postDown = [
+      `nft 'delete table inet wg_filter_${dev}'`,
+      `nft 'delete table ip wg_nat_${dev}'`
+    ].join('; ');
+  
+    return { postUp, postDown };
+  }; 
 };
