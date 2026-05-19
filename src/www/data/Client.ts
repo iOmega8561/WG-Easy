@@ -5,6 +5,9 @@ interface Client {
   enabled: boolean;
   createdAt: Date;
   updatedAt: Date;
+  latestHandshakeAt: Date | null
+  transferRx: number | null
+  transferTx: number | null
 }
 
 export default Client;
