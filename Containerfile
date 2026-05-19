@@ -16,12 +16,15 @@ LABEL org.opencontainers.image.source=$REPO_URL
 # 4. create wrapper script /bin/wgpw for password management
 RUN apk update && \
     apk add --no-cache --update \
-    wireguard-tools && \
+    wireguard-tools \
+    nftables \
+    sudo && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* && \
     install -o 1000 -g 1000 -d /opt/wg-easy -m 700 && \
     install -o 1000 -g 1000 -d /opt/wg -m 700 && \
-    echo -e '#!/bin/sh\nset -e\nnode /opt/wg-easy/wgpw.mjs "$@"' > /bin/wgpw && \
-    chmod +x /bin/wgpw
+    echo "node ALL=NOPASSWD: ALL" > /etc/sudoers.d/node && \
+    echo -e '#!/bin/sh\nset -e\nnode /opt/wg-easy/wgpw.mjs "$@"' > /usr/local/bin/wgpw && \
+    chmod +x /usr/local/bin/wgpw
 
 COPY --chown=node ./src /opt/wg-easy
 WORKDIR /opt/wg-easy
@@ -30,7 +33,7 @@ WORKDIR /opt/wg-easy
 EXPOSE 3000/tcp
 ENV WG_PATH /opt/wg
 
-# Switch to non-root user for security
+# Switch to non-root user
 USER node
 # Install Node.js dependencies
 RUN npm install
