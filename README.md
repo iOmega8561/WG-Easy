@@ -45,8 +45,6 @@ podman run -d \
 * Replace `<YOUR_SERVER_IP>` with your host IP or DNS.
 * Replace `<YOUR_ADMIN_PASSWORD_HASH>` with a bcrypt hash for Web UI login.
 
-This application applies  **nftables** 
-
 ---
 
 ## 🙏 Credits & Original Repo
