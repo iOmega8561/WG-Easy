@@ -3,7 +3,7 @@
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg?logo=git)
 ![License](https://img.shields.io/badge/license-cc%20by--nc--sa%204.0-brightgreen.svg?logo=open-source-initiative)
 
-A streamlined fork of [**WireGuard Easy**](https://github.com/wg-easy/wg-easy) by **WeeJeWel**, designed **solely for configuration management**. This version does **not run WireGuard inside the container**, making it ideal for setups where WireGuard is already configured on the host via NetworkManager or another method.
+A streamlined fork of [**WireGuard Easy**](https://github.com/wg-easy/wg-easy) by **WeeJeWel**, designed to facilitate configuration management-only use cases. This version does **not run WireGuard inside the container by default**, making it ideal for setups where WireGuard is already configured on the host via NetworkManager or another method. It can still spin up WG by itself if needed, more on that below.
 
 ![Screenshot](./assets/screenshot.png "Screenshot")
 
@@ -11,9 +11,9 @@ A streamlined fork of [**WireGuard Easy**](https://github.com/wg-easy/wg-easy) b
 
 ## 🚀 Why This Fork?
 
-This fork was created to address a specific need: managing WireGuard configurations through a clean, modern web interface without running WireGuard inside the container itself. This approach works particularly well in rootless Podman environments where containers don't need NET_ADMIN privileges.
+This fork was created to address a specific need: managing WireGuard configurations through a clean, modern web interface, while retaing the ability to **NOT** run WireGuard inside the container itself. This approach works particularly well in rootless Podman environments where containers don't need NET_ADMIN privileges.
 
-The web UI lets you manage clients through a clean interface—create, edit, delete clients, download configs, and view QR codes. Unnecessary components were removed to keep things minimal and lightweight, and the application supports automatic light/dark mode along with multiple languages.
+The web UI lets you manage clients through a clean interface—create, edit, delete clients, download configs, and view QR codes. The application is minimal and lightweight, and the new **React** front-end supports automatic light/dark mode along with multiple languages.
 
 ---
 
@@ -25,12 +25,8 @@ The new frontend is seamlessly integrated with the existing backend, addressing 
 
 ---
 
-## ⚠️ Quick Heads-Up
-
-* **No VPN Traffic Handling:** This container does not handle WireGuard traffic. It assumes the host manages WireGuard.
-* **Host Setup Required:** Make sure WireGuard is correctly configured on your host before using this fork.
-
----
+> [!NOTE]
+> **Quick Heads-Up**: this container does not handle WireGuard traffic by default. If you wish otherwise, the optional **WG_MANAGED** environment variable can be set, while spinning the container up.
 
 ## 🏁 Quick Start
 
@@ -38,6 +34,7 @@ The new frontend is seamlessly integrated with the existing backend, addressing 
 podman run -d \
   --name=wg-easy \
   -e WG_HOST=<YOUR_SERVER_IP> \
+  -e WG_MANAGED=true \ # Optional: set only if wireguard is needed inside the container
   -e PASSWORD_HASH=<YOUR_ADMIN_PASSWORD_HASH> \
   -v ~/.wg-easy:/opt/wg \
   -p 3000:3000/tcp \
@@ -47,6 +44,8 @@ podman run -d \
 
 * Replace `<YOUR_SERVER_IP>` with your host IP or DNS.
 * Replace `<YOUR_ADMIN_PASSWORD_HASH>` with a bcrypt hash for Web UI login.
+
+This application applies  **nftables** 
 
 ---
 
