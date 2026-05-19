@@ -31,7 +31,7 @@ jobs:
       run: |
         ACTOR=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
         SHA=${{ github.sha }}
-        podman build \
+        podman build --squash \
           --build-arg REPO_URL="${{ github.server_url }}/${{ github.repository }}" \
           -t ghcr.io/$ACTOR/wg-easy:$SHA \
           -t ghcr.io/$ACTOR/wg-easy:latest \
