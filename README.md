@@ -25,10 +25,10 @@ The new frontend is seamlessly integrated with the existing backend, addressing 
 
 ---
 
+## 🏁 Quick Start
+
 > [!NOTE]
 > **Quick Heads-Up**: this container does not handle WireGuard traffic by default. If you wish otherwise, the optional **WG_MANAGED** environment variable can be set, while spinning the container up.
-
-## 🏁 Quick Start
 
 ```bash
 podman run -d \
