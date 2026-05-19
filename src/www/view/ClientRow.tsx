@@ -49,7 +49,7 @@ const ClientRow: React.FC<Props.ClientRow> = ({
 
           <Editable 
             value={client.address}
-            textClass="text-sm text-gray-500"
+            textClass="text-sm text-gray-500 dark:text-neutral-400"
             onConfirm={(newAddr) => {
               Api.updateClientAddress(client.id, newAddr)
                 .then(() => triggerUpdate("clientUpdated"))
