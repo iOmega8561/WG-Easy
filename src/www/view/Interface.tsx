@@ -7,14 +7,14 @@ import Api from "../data/Api";
 import Props from "../data/Props";
 import Button from "./Button";
 import NewClient from "./NewClient";
-import Client from "../data/Client";
 import ClientRow from "./ClientRow";
+import useClientStats from "../hooks/useClientStats";
 
 const Interface: React.FC<Props.Interface> = ({ 
   authenticated 
 }) => {
+  const { clients, setClients, stats } = useClientStats(authenticated);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [clients, setClients] = useState<Client[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,11 +28,6 @@ const Interface: React.FC<Props.Interface> = ({
    
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
-
-  useEffect(() => {
-    authenticated ? Api.getClients()
-                          .then(setClients) : setClients([]);
-  }, [authenticated, isModalOpen, fileInputRef]) 
 
   return (
     <div className="
@@ -94,6 +89,7 @@ const Interface: React.FC<Props.Interface> = ({
         ) : (clients.map(client => (
           <ClientRow 
             client={client}
+            stats={stats[client.id]}
             onUpdate={() => {
               Api.getClients().then(setClients)
             }}
