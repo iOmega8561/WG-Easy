@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import Client from "./Client";
+import ClientStats from "./ClientStats";
 
 namespace Props {
   export interface Button {
@@ -12,6 +13,7 @@ namespace Props {
 
   export interface ClientRow {
     client: Client,
+    stats?: ClientStats | undefined,
     onUpdate: () => void
   }
 
@@ -46,6 +48,11 @@ namespace Props {
     disabled?: boolean
     active: boolean
     onClick: () => void
+  }
+
+  export interface Waveform {
+    rx: number[]
+    tx: number[]
   }
 }
 
