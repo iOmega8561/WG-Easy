@@ -1,13 +1,18 @@
 import React from "react";
-import { AlertTriangle, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 
-import { translate } from "../data/Translator";
+import { translate } from "../../data/Translator";
 import Button from "./Button";
-import Props from "../data/Props";
+import Props from "../../data/Props";
 
 const Dialog: React.FC<Props.Dialog> = ({
-  dismissAction,
-  onConfirm
+  titleIcon,
+  titleText,
+  content,
+  onDismiss,
+  onConfirm,
+  onConfirmTitle,
+  onConfirmDisabled
 }) => {
   return (
     <div className="modal-container">
@@ -18,9 +23,8 @@ const Dialog: React.FC<Props.Dialog> = ({
           flex items-center gap-4
           text-xl font-semibold 
           mb-4 dark:text-white">
-            <AlertTriangle size={24}/>
-
-            {translate("deleteClient")}
+            {titleIcon}
+            {titleText}
           </h3>
 
           <div className="mt-2">
@@ -28,9 +32,7 @@ const Dialog: React.FC<Props.Dialog> = ({
             flex flex-col
             text-sm text-gray-500 
             dark:text-neutral-300">
-              {translate("deleteDialog1")}
-
-              <strong>{translate("deleteDialog2")}</strong>
+              {content}
             </p>
           </div>
         </div>
@@ -41,21 +43,24 @@ const Dialog: React.FC<Props.Dialog> = ({
         bg-gray-50 dark:bg-neutral-900
         border-t dark:border-neutral-600">
           <Button 
-            onClick={dismissAction}
+            onClick={onDismiss}
           >
             <X size={16} /> 
             {translate('cancel')}
           </Button>
 
-          <Button 
-            onClick={() => { 
-              onConfirm();
-              dismissAction();
-            }}
-          >
-            <Check size={16} /> 
-            {translate("deleteClient")}
-          </Button>
+          {onConfirm && onConfirmTitle && (
+            <Button 
+              disabled={onConfirmDisabled || false}
+              onClick={() => { 
+                onConfirm();
+                onDismiss();
+              }}
+            >
+              <Check size={16} /> 
+              {onConfirmTitle}
+            </Button>
+          )}
         </div>
       </div>
     </div>

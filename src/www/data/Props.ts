@@ -17,8 +17,17 @@ namespace Props {
     onUpdate: () => void
   }
 
-  export interface Dialog extends Modal {
-    onConfirm: () => void
+  export interface Dialog extends Dismissable {
+    titleIcon?: React.ReactNode
+    titleText?: string
+    content: React.ReactNode
+    onConfirm?: () => void
+    onConfirmTitle?: string
+    onConfirmDisabled?: boolean
+  }
+
+  export interface Dismissable {
+    onDismiss: () => void
   }
 
   export interface Editable {
@@ -34,14 +43,6 @@ namespace Props {
 
   export interface Interface {
     authenticated: boolean
-  }
-
-  export interface Modal {
-    dismissAction: () => void
-  }
-
-  export interface QRCode extends Modal {
-    clientId: string
   }
 
   export interface Toggle {
