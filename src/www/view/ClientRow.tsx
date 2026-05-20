@@ -1,17 +1,16 @@
-import { ArrowDown, ArrowUp, Download, QrCode, Trash2 } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, Download, QrCode, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useState } from "react";
 
 import Api from "../data/Api";
 import Props from "../data/Props";
-import Toggle from "./Toggle";
-import Button from "./Button";
+import Toggle from "./components/Toggle";
+import Button from "./components/Button";
 import { translate } from "../data/Translator";
-import QRCode from "./QRCode";
-import Dialog from "./Dialog";
 import Editable from "./Editable";
-import Waveform from "./Waveform";
+import Waveform from "./components/Waveform";
 import Utility from "../data/Utility"
+import Dialog from "./components/Dialog";
 
 const ClientRow: React.FC<Props.ClientRow> = ({
   client,
@@ -37,10 +36,8 @@ const ClientRow: React.FC<Props.ClientRow> = ({
 
   return (
     <section className="
-    relative z-0 
-    overflow-hidden
-    border-b dark:border-neutral-600 last:border-0 
-    group">
+    relative overflow-hidden
+    border-b dark:border-neutral-600 last:border-0">
       {stats && (
         <Waveform 
           rx={stats.historyRx} 
@@ -49,10 +46,9 @@ const ClientRow: React.FC<Props.ClientRow> = ({
       )}
       
       <div key={client.id} className="
-      p-4 flex transition-colors 
+      p-4 flex transition-colors relative z-10
       justify-between items-center
-      bg-white/50 dark:bg-neutral-700/50 
-      hover:bg-white/70 dark:hover:bg-neutral-700/70">
+      bg-white/50 dark:bg-neutral-700/50">
         <div>
           <Editable 
             value={client.name} 
@@ -71,59 +67,55 @@ const ClientRow: React.FC<Props.ClientRow> = ({
             }} 
           />
         </div>
-          
-        <div className="
-        flex-1 flex justify-end
-        gap-8 items-center 
-        text-sm max-md:hidden">
-          {stats && client.enabled && (
-            <>
-              <div className="
-              flex flex-col 
-              items-end
-              text-neutral-500">
+        
+        {stats && client.enabled && (
+          <div className="
+          flex-1 flex justify-end
+          gap-8 items-center 
+          text-sm max-md:hidden">
+            <div className="
+            flex flex-col 
+            items-end
+            text-neutral-500">
 
+              <span className="
+              flex items-center gap-1">
+                <ArrowDown
+                  size={14} 
+                />
                 <span className="
-                flex items-center gap-1">
-                  <ArrowDown
-                    size={14} 
-                  />
-                  <span className="
-                  text-neutral-800 
-                  dark:text-neutral-200">
-                    {Utility.formatBytes(stats.rxSpeed)}/s
-                  </span>
+                text-neutral-800 
+                dark:text-neutral-200">
+                  {Utility.formatBytes(stats.rxSpeed)}/s
                 </span>
+              </span>
+              <span className="text-xs">
+                {Utility.formatBytes(client.transferRx || 0)}
+              </span>
+            </div>
 
-                <span className="text-xs">
-                  {Utility.formatBytes(client.transferRx || 0)}
-                </span>
-              </div>
+            <div className="
+            flex flex-col 
+            items-end
+            text-neutral-500">
 
-              <div className="
-              flex flex-col 
-              items-end
-              text-neutral-500">
-
+              <span className="
+              flex items-center gap-1 ">
+                <ArrowUp
+                  size={14}
+                /> 
                 <span className="
-                flex items-center gap-1 ">
-                  <ArrowUp
-                    size={14}
-                  /> 
-                  <span className="
-                  text-neutral-800 
-                  dark:text-neutral-200">
-                    {Utility.formatBytes(stats.txSpeed)}/s
-                  </span>
+                text-neutral-800 
+                dark:text-neutral-200">
+                  {Utility.formatBytes(stats.txSpeed)}/s
                 </span>
-                
-                <span className="text-xs">
-                  {Utility.formatBytes(client.transferTx || 0)}
-                </span>
-              </div>
-            </>
-          )}
-        </div>
+              </span>
+              
+              <span className="text-xs">
+                {Utility.formatBytes(client.transferTx || 0)}
+              </span>
+            </div>
+          </div>)}
 
         <div className="
         flex items-center gap-1
@@ -138,13 +130,6 @@ const ClientRow: React.FC<Props.ClientRow> = ({
             onClick={() => setIsQRCodeShown(!isQRCodeShown)}
           >
             <QrCode size={20}/>
-
-            {isQRCodeShown && (
-              <QRCode
-                dismissAction={() => setIsQRCodeShown(false)}
-                clientId={client.id}
-              />
-            )}
           </Button>
 
           <Button
@@ -162,14 +147,28 @@ const ClientRow: React.FC<Props.ClientRow> = ({
           </Button>
         </div>
       </div>
+    
+      {isQRCodeShown && (
+        <Dialog
+          content={<img src={`/api/wireguard/client/${client.id}/qrcode.svg`}/>}
+          onDismiss={() => setIsQRCodeShown(false)}
+        />
+      )}
 
       {isDialogOpen && (
         <Dialog
-          dismissAction={() => setIsDialogOpen(false)}
+          titleIcon={<AlertTriangle size={24}/>}
+          titleText={translate("deleteClient")}
+          content={<>
+            {translate("deleteDialog1")}
+            <strong>{translate("deleteDialog2")}</strong>
+          </>}
+          onDismiss={() => setIsDialogOpen(false)}
           onConfirm={() => {
             Api.deleteClient(client.id)
               .then(() => triggerUpdate("clientDeleted"))
           }}
+          onConfirmTitle={translate("deleteClient")}
         />
       )}
     </section>

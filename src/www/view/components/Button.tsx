@@ -1,5 +1,5 @@
 import React from "react";
-import Props from "../data/Props";
+import Props from "../../data/Props";
 
 const Button: React.FC<Props.Button> = ({
   children,

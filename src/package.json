@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && vite preview",
     "build-and-serve": "npm run build && NODE_ENV=production node server.js",
     "serve": "NODE_ENV=production node server.js"
   },

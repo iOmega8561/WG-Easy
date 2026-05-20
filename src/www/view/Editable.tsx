@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Pencil } from "lucide-react";
 
 import Props from "../data/Props";
-import Button from "./Button";
+import Button from "./components/Button";
 
 const Editable: React.FC<Props.Editable> = ({
   onConfirm,

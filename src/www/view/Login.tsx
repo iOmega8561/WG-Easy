@@ -3,25 +3,25 @@ import { translate } from "../data/Translator";
 
 import Props from "../data/Props";
 import Api from "../data/Api";
-import Button from "./Button";
+import Button from "./components/Button";
 
 import wgLogo from "../img/logo.png";
 
-const Login: React.FC<Props.Modal> = ({
-  dismissAction
+const Login: React.FC<Props.Dismissable> = ({
+  onDismiss
 }) => {
 
   const [password, setPassword] = useState('');
 
   const handleLogin = (
-    e: React.FormEvent, 
+    e: React.SubmitEvent, 
     pw: string
   ) => {
     e.preventDefault();
 
     Api.createSession(pw)
       .then(() => {
-        dismissAction();
+        onDismiss();
       })
   };
 

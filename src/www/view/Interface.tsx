@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 import Api from "../data/Api";
 import Props from "../data/Props";
-import Button from "./Button";
+import Button from "./components/Button";
 import NewClient from "./NewClient";
 import ClientRow from "./ClientRow";
 import useClientStats from "../hooks/useClientStats";
@@ -99,7 +99,7 @@ const Interface: React.FC<Props.Interface> = ({
 
       {isModalOpen && (
         <NewClient 
-          dismissAction={() => setIsModalOpen(false)}
+          onDismiss={() => setIsModalOpen(false)}
         />
       )}
     </div>
