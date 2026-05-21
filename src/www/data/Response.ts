@@ -1,3 +1,5 @@
+// eslint-disable @typescript-eslint/no-namespace
+
 namespace Response {
   export interface Session {
     requiresPassword: boolean;
