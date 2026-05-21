@@ -53,7 +53,6 @@ RUN npm install --omit=dev && \
 
 # Copy only the strictly necessary files from Stage 1
 COPY --from=builder --chown=node /opt/wg-easy/lib       /opt/wg-easy/lib
-COPY --from=builder --chown=node /opt/wg-easy/services  /opt/wg-easy/services
 COPY --from=builder --chown=node /opt/wg-easy/www/dist  /opt/wg-easy/www/dist
 COPY --from=builder --chown=node /opt/wg-easy/config.js /opt/wg-easy/
 COPY --from=builder --chown=node /opt/wg-easy/server.js /opt/wg-easy/
