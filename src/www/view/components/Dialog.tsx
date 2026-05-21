@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Check, X } from "lucide-react";
 
 import { translate } from "../../data/Translator";
@@ -14,6 +14,21 @@ const Dialog: React.FC<Props.Dialog> = ({
   onConfirmTitle,
   onConfirmDisabled
 }) => {
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onDismiss();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onDismiss]);
+
   return (
     <div className="modal-container">
       <div className="modal-content">
