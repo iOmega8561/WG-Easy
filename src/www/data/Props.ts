@@ -35,12 +35,6 @@ namespace Props {
     onUpdate: () => void
   }
 
-  export interface Editable {
-    value: string,
-    textClass: string,
-    onConfirm: (newValue: string) => void
-  }
-
   export interface Header {
     requiresPassword: boolean
     setAuthenticated: Dispatch<SetStateAction<boolean | null>>

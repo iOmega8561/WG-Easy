@@ -7,7 +7,6 @@ import Props from "../data/Props";
 import Toggle from "./components/Toggle";
 import Button from "./components/Button";
 import { translate } from "../data/Translator";
-import Editable from "./Editable";
 import Waveform from "./components/Waveform";
 import Utility from "../data/Utility"
 import Dialog from "./components/Dialog";
