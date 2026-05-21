@@ -1,12 +1,21 @@
-import { AlertTriangle, ArrowDown, ArrowUp, Download, Edit, QrCode, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import {
+  AlertTriangle, 
+  ArrowDown, 
+  ArrowUp, 
+  Download, 
+  Edit, 
+  QrCode, 
+  Trash2 
+} from "lucide-react";
 
 import Api from "../data/Api";
 import Props from "../data/Props";
 import Toggle from "./components/Toggle";
 import Button from "./components/Button";
-import { translate } from "../data/Translator";
 import Waveform from "./components/Waveform";
 import Utility from "../data/Utility"
 import Dialog from "./components/Dialog";
@@ -17,13 +26,14 @@ const ClientRow: React.FC<Props.ClientRow> = ({
   stats,
   onUpdate
 }) => {
+  const { t } = useTranslation();
   const [isQRCodeShown, setIsQRCodeShown] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
-  const triggerUpdate = (t: string) => {
+  const triggerUpdate = (key: string) => {
     onUpdate();
-    toast.success(translate(t, {c: client.name}));
+    toast.success(t(key, {c: client.name}));
   }
 
   const toggleEnabled = () => {
@@ -161,17 +171,17 @@ const ClientRow: React.FC<Props.ClientRow> = ({
       {isDialogOpen && (
         <Dialog
           titleIcon={<AlertTriangle size={24}/>}
-          titleText={translate("deleteClient")}
+          titleText={t("deleteClient")}
           content={<>
-            {translate("deleteDialog1")}
-            <strong>{translate("deleteDialog2")}</strong>
+            {t("deleteDialog1")}
+            <strong>{t("deleteDialog2")}</strong>
           </>}
           onDismiss={() => setIsDialogOpen(false)}
           onConfirm={() => {
             Api.deleteClient(client.id)
               .then(() => triggerUpdate("clientDeleted"))
           }}
-          onConfirmTitle={translate("deleteClient")}
+          onConfirmTitle={t("deleteClient")}
         />
       )}
 

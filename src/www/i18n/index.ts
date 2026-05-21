@@ -1,13 +1,13 @@
-import en from '../locale/en.json';
-import it from '../locale/it.json';
-import ru from '../locale/ru.json';
+import en from './locales/en.json';
+import it from './locales/it.json';
+import ru from './locales/ru.json';
 
 import { initReactI18next } from 'react-i18next';
 
-import Translator from 'i18next';
+import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-Translator
+i18next
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -23,5 +23,4 @@ Translator
     },
   });
 
-export default Translator;
-export const translate = Translator.t;
+export default i18next.t;

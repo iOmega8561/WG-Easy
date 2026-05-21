@@ -1,5 +1,5 @@
 import { LogOut } from "lucide-react";
-import { translate } from "../data/Translator";
+import { useTranslation } from "react-i18next";
 
 import Api from "../data/Api";
 import Props from "../data/Props"
@@ -10,6 +10,7 @@ const Header: React.FC<Props.Header> = ({
   requiresPassword,
   setAuthenticated
 }) => {
+  const { t } = useTranslation();
   
   const handleLogout = async () => {
     Api.deleteSession()
@@ -39,7 +40,7 @@ const Header: React.FC<Props.Header> = ({
         flex 
         items-center gap-1 
         text-sm text-gray-500 hover:text-red-600">
-          {translate('logout')} <LogOut size={16} />
+          {t('logout')} <LogOut size={16} />
         </button>
       )}
     </div>

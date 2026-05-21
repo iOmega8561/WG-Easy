@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { translate } from "../data/Translator";
+import { useTranslation } from "react-i18next";
 
 import Props from "../data/Props";
 import Api from "../data/Api";
@@ -10,7 +10,7 @@ import wgLogo from "../img/logo.png";
 const Login: React.FC<Props.Dismissable> = ({
   onDismiss
 }) => {
-
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
 
   const handleLogin = (
@@ -50,12 +50,12 @@ const Login: React.FC<Props.Dismissable> = ({
           type="password" 
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder={translate('password')}
+          placeholder={t('password')}
           className="text-field mb-4"
         />
 
         <Button variant="btn-lg">
-          {translate('signIn')}
+          {t('signIn')}
         </Button>
       </form>
     </div>
