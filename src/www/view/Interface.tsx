@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Plus, DatabaseBackup, RefreshCw } from "lucide-react";
-import { translate } from "../data/Translator";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 import Api from "../data/Api";
@@ -13,6 +13,7 @@ import useClientStats from "../hooks/useClientStats";
 const Interface: React.FC<Props.Interface> = ({ 
   authenticated 
 }) => {
+  const { t } = useTranslation();
   const { clients, setClients, stats } = useClientStats(authenticated);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -23,7 +24,7 @@ const Interface: React.FC<Props.Interface> = ({
 
     Api.restoreConfiguration(file).then(() => {
       Api.getClients().then(setClients)
-      toast.success(translate('restoreSuccess'));
+      toast.success(t('restoreSuccess'));
     })
    
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -47,7 +48,7 @@ const Interface: React.FC<Props.Interface> = ({
       flex justify-between items-center">
         <h2 className="
         text-2xl font-medium">
-          {translate('clients')}
+          {t('clients')}
         </h2>
         
         <div className="
@@ -57,7 +58,7 @@ const Interface: React.FC<Props.Interface> = ({
             <RefreshCw size={18} />
 
             <span className="max-sm:hidden">
-              {translate('restore')}
+              {t('restore')}
             </span>
           </Button>
 
@@ -65,7 +66,7 @@ const Interface: React.FC<Props.Interface> = ({
             <DatabaseBackup size={18} /> 
 
             <span className="max-sm:hidden">
-              {translate('backup')}
+              {t('backup')}
             </span>
           </Button>
 
@@ -73,7 +74,7 @@ const Interface: React.FC<Props.Interface> = ({
             <Plus size={18} /> 
 
             <span className="max-sm:hidden">
-              {translate('new')}
+              {t('new')}
             </span>
           </Button>
         </div>
@@ -84,7 +85,7 @@ const Interface: React.FC<Props.Interface> = ({
           <div className="
           flex p-6 justify-center 
           text-lg">
-            {translate("noClients")}
+            {t("noClients")}
           </div>
         ) : (clients.map(client => (
           <ClientRow 

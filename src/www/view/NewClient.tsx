@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { translate } from "../data/Translator";
+import { useTranslation } from "react-i18next";
 import Props from "../data/Props";
 import Api from "../data/Api";
 import Dialog from "./components/Dialog";
@@ -10,6 +10,7 @@ import Dialog from "./components/Dialog";
 const NewClient: React.FC<Props.Dismissable> = ({
   onDismiss
 }) => {
+  const { t } = useTranslation();
   const [newClientName, setNewClientName] = useState("");
 
   const handleCreateClient = async () => {
@@ -19,19 +20,19 @@ const NewClient: React.FC<Props.Dismissable> = ({
       const newName = newClientName;
       setNewClientName("");
       onDismiss();
-      toast.success(translate('clientCreated', {c: newName}));
+      toast.success(t('clientCreated', {c: newName}));
     });      
   };
 
   return (
     <Dialog
       titleIcon={<Plus size={24}/>}
-      titleText={translate('newClient')}
+      titleText={t('newClient')}
       content={<>
         <input
           autoFocus
           type="text"
-          placeholder={translate('name')}
+          placeholder={t('name')}
           value={newClientName}
           onChange={(e) => setNewClientName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleCreateClient()}
@@ -43,7 +44,7 @@ const NewClient: React.FC<Props.Dismissable> = ({
         setNewClientName(""); 
       }}
       onConfirm={handleCreateClient}
-      onConfirmTitle={translate('create')}
+      onConfirmTitle={t('create')}
       onConfirmDisabled={!newClientName.trim()}
     />
   )

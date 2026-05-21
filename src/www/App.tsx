@@ -1,9 +1,11 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
-import { ToastContainer } from 'react-toastify'
-import useIsDark from './hooks/useIsDark'
-import Content from './view/Content'
+import { StrictMode } from "react"
+import ReactDOM from "react-dom/client"
+import { ToastContainer } from "react-toastify"
 
+import useIsDark from "./hooks/useIsDark"
+import Content from "./view/Content"
+
+import "./i18n"
 import './styles/globals.css'
 
 // eslint-disable-next-line react-refresh/only-export-components

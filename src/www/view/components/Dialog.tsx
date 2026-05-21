@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Check, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-import { translate } from "../../data/Translator";
 import Button from "./Button";
 import Props from "../../data/Props";
 
@@ -14,6 +14,7 @@ const Dialog: React.FC<Props.Dialog> = ({
   onConfirmTitle,
   onConfirmDisabled
 }) => {
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -63,7 +64,7 @@ const Dialog: React.FC<Props.Dialog> = ({
             onClick={onDismiss}
           >
             <X size={16} /> 
-            {translate('cancel')}
+            {t('cancel')}
           </Button>
 
           {onConfirm && onConfirmTitle && (
