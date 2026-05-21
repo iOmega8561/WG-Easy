@@ -3,7 +3,6 @@
 
 'use strict';
 
-const bcrypt = require('bcryptjs');
 const crypto = require('node:crypto');
 const { createServer } = require('node:http');
 const { stat, readFile } = require('node:fs/promises');
@@ -25,8 +24,6 @@ const {
   serveStatic,
 } = require('h3');
 
-const WireGuard = require('./WireGuard').shared;
-
 const {
   PORT,
   WEBUI_HOST,
@@ -34,31 +31,13 @@ const {
   PASSWORD_HASH
 } = require('../config');
 
+const Util = require('./Util')
+
 const requiresPassword = !!PASSWORD_HASH;
-
-/**
- * Checks if `password` matches the PASSWORD_HASH.
- *
- * If environment variable is not set, the password is always invalid.
- *
- * @param {string} password String to test
- * @returns {boolean} true if matching environment, otherwise false
- */
-const isPasswordValid = (password) => {
-  if (typeof password !== 'string') {
-    return false;
-  }
-
-  if (PASSWORD_HASH) {
-    return bcrypt.compareSync(password, PASSWORD_HASH);
-  }
-
-  return false;
-};
 
 module.exports = class Server {
 
-  constructor() {
+  constructor(wgService) {
     const app = createApp();
     this.app = app;
 
@@ -100,7 +79,7 @@ module.exports = class Server {
           });
         }
 
-        if (!isPasswordValid(password)) {
+        if (!Util.isPasswordValid(password, PASSWORD_HASH)) {
           throw createError({
             status: 401,
             message: 'Incorrect Password',
@@ -127,7 +106,7 @@ module.exports = class Server {
         }
 
         if (req.url.startsWith('/api/') && req.headers['authorization']) {
-          if (isPasswordValid(req.headers['authorization'])) {
+          if (Util.isPasswordValid(req.headers['authorization'], PASSWORD_HASH)) {
             return next();
           }
           return res.status(401).json({
@@ -154,18 +133,18 @@ module.exports = class Server {
         return { success: true };
       }))
       .get('/api/wireguard/client', defineEventHandler(() => {
-        return WireGuard.getClients();
+        return wgService.getClients();
       }))
       .get('/api/wireguard/client/:clientId/qrcode.svg', defineEventHandler(async (event) => {
         const clientId = getRouterParam(event, 'clientId');
-        const svg = await WireGuard.getClientQRCodeSVG({ clientId });
+        const svg = await wgService.getClientQRCodeSVG({ clientId });
         setHeader(event, 'Content-Type', 'image/svg+xml');
         return svg;
       }))
       .get('/api/wireguard/client/:clientId/configuration', defineEventHandler(async (event) => {
         const clientId = getRouterParam(event, 'clientId');
-        const client = await WireGuard.getClient({ clientId });
-        const config = await WireGuard.getClientConfiguration({ clientId });
+        const client = await wgService.getClient({ clientId });
+        const config = await wgService.getClientConfiguration({ clientId });
         const configName = client.name
           .replace(/[^a-zA-Z0-9_=+.-]/g, '-')
           .replace(/(-{2,}|-$)/g, '-')
@@ -177,12 +156,12 @@ module.exports = class Server {
       }))
       .post('/api/wireguard/client', defineEventHandler(async (event) => {
         const { name } = await readBody(event);
-        await WireGuard.createClient({ name });
+        await wgService.createClient({ name });
         return { success: true };
       }))
       .delete('/api/wireguard/client/:clientId', defineEventHandler(async (event) => {
         const clientId = getRouterParam(event, 'clientId');
-        await WireGuard.deleteClient({ clientId });
+        await wgService.deleteClient({ clientId });
         return { success: true };
       }))
       .post('/api/wireguard/client/:clientId/enable', defineEventHandler(async (event) => {
@@ -190,7 +169,7 @@ module.exports = class Server {
         if (clientId === '__proto__' || clientId === 'constructor' || clientId === 'prototype') {
           throw createError({ status: 403 });
         }
-        await WireGuard.enableClient({ clientId });
+        await wgService.enableClient({ clientId });
         return { success: true };
       }))
       .post('/api/wireguard/client/:clientId/disable', defineEventHandler(async (event) => {
@@ -198,7 +177,7 @@ module.exports = class Server {
         if (clientId === '__proto__' || clientId === 'constructor' || clientId === 'prototype') {
           throw createError({ status: 403 });
         }
-        await WireGuard.disableClient({ clientId });
+        await wgService.disableClient({ clientId });
         return { success: true };
       }))
       .put('/api/wireguard/client/:clientId/name', defineEventHandler(async (event) => {
@@ -207,7 +186,7 @@ module.exports = class Server {
           throw createError({ status: 403 });
         }
         const { name } = await readBody(event);
-        await WireGuard.updateClientName({ clientId, name });
+        await wgService.updateClientName({ clientId, name });
         return { success: true };
       }))
       .put('/api/wireguard/client/:clientId/address', defineEventHandler(async (event) => {
@@ -216,7 +195,7 @@ module.exports = class Server {
           throw createError({ status: 403 });
         }
         const { address } = await readBody(event);
-        await WireGuard.updateClientAddress({ clientId, address });
+        await wgService.updateClientAddress({ clientId, address });
         return { success: true };
       }));
 
@@ -249,14 +228,14 @@ module.exports = class Server {
 
     router3
       .get('/api/wireguard/backup', defineEventHandler(async (event) => {
-        const config = await WireGuard.backupConfiguration();
+        const config = await wgService.backupConfiguration();
         setHeader(event, 'Content-Disposition', 'attachment; filename="wg0.json"');
         setHeader(event, 'Content-Type', 'text/json');
         return config;
       }))
       .put('/api/wireguard/restore', defineEventHandler(async (event) => {
         const { file } = await readBody(event);
-        await WireGuard.restoreConfiguration(file);
+        await wgService.restoreConfiguration(file);
         return { success: true };
       }));
 

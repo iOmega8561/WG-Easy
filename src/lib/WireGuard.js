@@ -31,8 +31,6 @@ const {
 
 module.exports = class WireGuard {
 
-  static shared = new WireGuard();
-
   async __buildConfig() {
     this.__configPromise = Promise.resolve().then(async () => {
       if (!WG_HOST) {
