@@ -85,29 +85,8 @@ const ClientRow: React.FC<Props.ClientRow> = ({
             text-neutral-500">
 
               <span className="
-              flex items-center gap-1">
-                <ArrowDown
-                  size={14} 
-                />
-                <span className="
-                text-neutral-800 
-                dark:text-neutral-200">
-                  {Utility.formatBytes(stats.rxSpeed)}/s
-                </span>
-              </span>
-              <span className="text-xs">
-                {Utility.formatBytes(client.transferRx || 0)}
-              </span>
-            </div>
-
-            <div className="
-            flex flex-col 
-            items-end
-            text-neutral-500">
-
-              <span className="
               flex items-center gap-1 ">
-                <ArrowUp
+                <ArrowDown
                   size={14}
                 /> 
                 <span className="
@@ -119,6 +98,27 @@ const ClientRow: React.FC<Props.ClientRow> = ({
               
               <span className="text-xs">
                 {Utility.formatBytes(client.transferTx || 0)}
+              </span>
+            </div>
+
+            <div className="
+            flex flex-col 
+            items-end
+            text-neutral-500">
+
+              <span className="
+              flex items-center gap-1">
+                <ArrowUp
+                  size={14} 
+                />
+                <span className="
+                text-neutral-800 
+                dark:text-neutral-200">
+                  {Utility.formatBytes(stats.rxSpeed)}/s
+                </span>
+              </span>
+              <span className="text-xs">
+                {Utility.formatBytes(client.transferRx || 0)}
               </span>
             </div>
           </div>
