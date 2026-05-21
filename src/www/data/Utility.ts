@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-namespace */
+
 namespace Utility {
 
   export function formatBytes (bytes: number, decimals = 2): string {
