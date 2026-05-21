@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Plus, DatabaseBackup, RefreshCw } from "lucide-react";
 import { translate } from "../data/Translator";
 import { toast } from "react-toastify";

@@ -16,7 +16,7 @@ const NewClient: React.FC<Props.Dismissable> = ({
     if (!newClientName.trim()) return;
     
     Api.createClient(newClientName).then(() => {
-      let newName = newClientName;
+      const newName = newClientName;
       setNewClientName("");
       onDismiss();
       toast.success(translate('clientCreated', {c: newName}));

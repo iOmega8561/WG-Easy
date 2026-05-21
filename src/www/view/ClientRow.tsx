@@ -27,10 +27,10 @@ const ClientRow: React.FC<Props.ClientRow> = ({
   }
 
   const toggleEnabled = () => {
-    client.enabled ? 
+    if (client.enabled) 
       Api.disableClient(client.id) 
         .then(() => triggerUpdate("clientDisabled"))  
-      : 
+    else
       Api.enableClient(client.id)
         .then(() => triggerUpdate("clientEnabled"))
   }
