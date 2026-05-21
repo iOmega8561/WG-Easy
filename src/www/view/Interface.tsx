@@ -44,7 +44,8 @@ const Interface: React.FC<Props.Interface> = ({
       />
 
       <div className="
-      p-4 border-b-4 border-double dark:border-neutral-600 
+      p-4 border-b-4 border-double 
+      border-neutral-200 dark:border-neutral-600 
       flex justify-between items-center">
         <h2 className="
         text-2xl font-medium">

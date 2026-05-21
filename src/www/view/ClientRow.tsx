@@ -48,7 +48,8 @@ const ClientRow: React.FC<Props.ClientRow> = ({
   return (
     <section className="
     relative overflow-hidden
-    border-b dark:border-neutral-600 last:border-0">
+    border-b last:border-0
+    border-neutral-200 dark:border-neutral-600 ">
       {stats && (
         <Waveform 
           rx={stats.historyRx} 
