@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowDown, ArrowUp, Download, QrCode, Trash2 } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, Download, Edit, QrCode, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useState } from "react";
 
@@ -11,6 +11,7 @@ import Editable from "./Editable";
 import Waveform from "./components/Waveform";
 import Utility from "../data/Utility"
 import Dialog from "./components/Dialog";
+import EditClient from "./EditClient";
 
 const ClientRow: React.FC<Props.ClientRow> = ({
   client,
@@ -19,6 +20,7 @@ const ClientRow: React.FC<Props.ClientRow> = ({
 }) => {
   const [isQRCodeShown, setIsQRCodeShown] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const triggerUpdate = (t: string) => {
     onUpdate();
@@ -49,23 +51,17 @@ const ClientRow: React.FC<Props.ClientRow> = ({
       p-4 flex transition-colors relative z-10
       justify-between items-center
       bg-white/50 dark:bg-neutral-700/50">
-        <div>
-          <Editable 
-            value={client.name} 
-            textClass="text-medium"
-            onConfirm={(newName) => {
-              Api.updateClientName(client.id, newName)
-                .then(() => triggerUpdate("clientUpdated"))
-            }} 
-          />
-          <Editable 
-            value={client.address}
-            textClass="text-sm text-gray-500 dark:text-neutral-400"
-            onConfirm={(newAddr) => {
-              Api.updateClientAddress(client.id, newAddr)
-                .then(() => triggerUpdate("clientUpdated"))
-            }} 
-          />
+
+        <div className="
+        flex flex-col
+        gap-2">
+          {client.name}
+
+          <span className="
+          text-sm text-gray-500 
+          dark:text-neutral-400">
+            {client.address}
+          </span>
         </div>
         
         {stats && client.enabled && (
@@ -115,7 +111,8 @@ const ClientRow: React.FC<Props.ClientRow> = ({
                 {Utility.formatBytes(client.transferTx || 0)}
               </span>
             </div>
-          </div>)}
+          </div>
+        )}
 
         <div className="
         flex items-center gap-1
@@ -124,6 +121,13 @@ const ClientRow: React.FC<Props.ClientRow> = ({
             active={client.enabled}
             onClick={() => toggleEnabled()}
           />
+
+          <Button
+            variant="btn-sm"
+            onClick={() => setIsEditModalOpen(!isEditModalOpen)}
+          >
+            <Edit size={20}/>
+          </Button>
 
           <Button
             variant="btn-sm"
@@ -169,6 +173,16 @@ const ClientRow: React.FC<Props.ClientRow> = ({
               .then(() => triggerUpdate("clientDeleted"))
           }}
           onConfirmTitle={translate("deleteClient")}
+        />
+      )}
+
+      {isEditModalOpen && (
+        <EditClient
+          client={client}
+          onDismiss={() => setIsEditModalOpen(false)}
+          onUpdate={() => {
+            triggerUpdate("clientUpdated")
+          }}
         />
       )}
     </section>
