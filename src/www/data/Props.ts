@@ -1,3 +1,5 @@
+// eslint-disable @typescript-eslint/no-namespace
+
 import { Dispatch, SetStateAction } from "react";
 import Client from "./Client";
 import ClientStats from "./ClientStats";
