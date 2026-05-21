@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 'use strict';
 
 // Import needed libraries
@@ -8,7 +10,6 @@ const generateHash = async (password) => {
   try {
     const salt = await bcrypt.genSalt(12);
     const hash = await bcrypt.hash(password, salt);
-    // eslint-disable-next-line no-console
     console.log(`PASSWORD_HASH='${hash}'`);
   } catch (error) {
     throw new Error(`Failed to generate hash : ${error}`);
@@ -20,10 +21,8 @@ const comparePassword = async (password, hash) => {
   try {
     const match = await bcrypt.compare(password, hash);
     if (match) {
-    // eslint-disable-next-line no-console
       console.log('Password matches the hash !');
     } else {
-    // eslint-disable-next-line no-console
       console.log('Password does not match the hash.');
     }
   } catch (error) {
@@ -46,9 +45,7 @@ const comparePassword = async (password, hash) => {
       await generateHash(password);
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error(error);
-    // eslint-disable-next-line no-process-exit
     process.exit(1);
   }
 })();
