@@ -3,9 +3,10 @@
 
 'use strict';
 
-require('./services/Server');
+const Server = require('./lib/Server');
+new Server();
 
-const WireGuard = require('./services/WireGuard');
+const WireGuard = require('./lib/WireGuard').shared;
 
 WireGuard.getConfig()
   .catch((err) => {

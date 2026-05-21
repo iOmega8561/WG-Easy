@@ -25,7 +25,7 @@ const {
   serveStatic,
 } = require('h3');
 
-const WireGuard = require('../services/WireGuard');
+const WireGuard = require('./WireGuard').shared;
 
 const {
   PORT,
