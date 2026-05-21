@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable no-undef */
+
 'use strict';
 
 const fs = require('node:fs/promises');
@@ -40,7 +43,7 @@ module.exports = class WireGuard {
         config = await fs.readFile(path.join(WG_PATH, 'wg0.json'), 'utf8');
         config = JSON.parse(config);
         debug('Configuration loaded.');
-      } catch (err) {
+      } catch {
         const privateKey = await Util.exec('wg genkey');
         const publicKey = await Util.exec(`echo ${privateKey} | wg pubkey`, {
           log: 'echo ***hidden*** | wg pubkey',
@@ -179,9 +182,9 @@ ${client.preSharedKey ? `PresharedKey = ${client.preSharedKey}\n` : ''
       .forEach((line) => {
         const [
           publicKey,
-          preSharedKey, // eslint-disable-line no-unused-vars
-          endpoint, // eslint-disable-line no-unused-vars
-          allowedIps, // eslint-disable-line no-unused-vars
+          preSharedKey, // eslint-disable-line @typescript-eslint/no-unused-vars
+          endpoint, // eslint-disable-line @typescript-eslint/no-unused-vars
+          allowedIps, // eslint-disable-line @typescript-eslint/no-unused-vars
           latestHandshakeAt,
           transferRx,
           transferTx,

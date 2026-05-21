@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable no-undef */
+
 'use strict';
 
 const childProcess = require('child_process');
@@ -18,7 +21,6 @@ module.exports = class Util {
   }
 
   static promisify(fn) {
-    // eslint-disable-next-line func-names
     return function(req, res) {
       Promise.resolve().then(async () => fn(req, res))
         .then((result) => {
@@ -39,7 +41,6 @@ module.exports = class Util {
             error = new Error(error);
           }
 
-          // eslint-disable-next-line no-console
           console.error(error);
 
           return res
