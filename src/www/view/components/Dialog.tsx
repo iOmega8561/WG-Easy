@@ -19,13 +19,15 @@ const Dialog: React.FC<Props.Dialog> = ({
       <div className="modal-content">
         <div className="p-6">
 
-          <h3 className="
-          flex items-center gap-4
-          text-xl font-semibold 
-          mb-4 dark:text-white">
-            {titleIcon}
-            {titleText}
-          </h3>
+          {(titleIcon || titleText) && (
+            <h3 className="
+            flex items-center gap-4
+            text-xl font-semibold 
+            mb-4 dark:text-white">
+              {titleIcon}
+              {titleText}
+            </h3>
+          )}
 
           <div className="mt-2">
             <p className="
