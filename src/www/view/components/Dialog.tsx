@@ -59,7 +59,8 @@ const Dialog: React.FC<Props.Dialog> = ({
         flex justify-between
         py-2 px-6
         bg-gray-50 dark:bg-neutral-900
-        border-t dark:border-neutral-600">
+        border-t 
+        border-neutral-200 dark:border-neutral-600">
           <Button 
             onClick={onDismiss}
           >
