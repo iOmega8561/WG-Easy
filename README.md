@@ -27,23 +27,50 @@ The new frontend is seamlessly integrated with the existing backend, addressing 
 
 ## 🏁 Quick Start
 
-> [!NOTE]
-> **Quick Heads-Up**: this container does not handle WireGuard traffic by default. If you wish otherwise, the optional **WG_MANAGED** environment variable can be set, while spinning the container up.
+To deploy `wg-easy`, choose the configuration that matches your networking requirements.
+
+### 1. Standard Deployment (No internal WireGuard tunnel)
+
+Use this configuration if WireGuard is managed externally or if the container is only acting as a configuration UI.
 
 ```bash
 podman run -d \
   --name=wg-easy \
   -e WG_HOST=<YOUR_SERVER_IP> \
-  -e WG_MANAGED=true \ # Optional: set only if wireguard is needed inside the container
   -e PASSWORD_HASH=<YOUR_ADMIN_PASSWORD_HASH> \
   -v ~/.wg-easy:/opt/wg \
   -p 3000:3000/tcp \
-  --userns keep-id \ # Optional: Map the user id with podman rootless
+  --userns keep-id \
   ghcr.io/iomega8561/wg-easy:latest
+
 ```
 
-* Replace `<YOUR_SERVER_IP>` with your host IP or DNS.
-* Replace `<YOUR_ADMIN_PASSWORD_HASH>` with a bcrypt hash for Web UI login.
+### 2. Full WireGuard Tunnel Deployment
+
+Use this configuration to enable internal WireGuard tunnel management. This requires elevated networking capabilities and kernel parameters.
+
+```bash
+podman run -d \
+  --name=wg-easy \
+  --cap-add=NET_ADMIN \
+  --cap-add=NET_RAW \
+  --cap-add=SYS_MODULE \
+  --sysctl net.ipv4.ip_forward=1 \
+  --sysctl net.ipv4.conf.all.src_valid_mark=1 \
+  -e WG_HOST=<YOUR_SERVER_IP> \
+  -e WG_MANAGED=true \
+  -e PASSWORD_HASH=<YOUR_ADMIN_PASSWORD_HASH> \
+  -v ~/.wg-easy:/opt/wg \
+  -p 3000:3000/tcp \
+  -p 51820:51820/udp \
+  --userns keep-id \
+  ghcr.io/iomega8561/wg-easy:latest
+
+```
+
+* **`<YOUR_SERVER_IP>`**: Public IP or FQDN of your host.
+* **`<YOUR_ADMIN_PASSWORD_HASH>`**: Bcrypt hash for the Web UI.
+* **Port 51820/udp**: Must be exposed to accept incoming WireGuard client connections.
 
 ---
 
