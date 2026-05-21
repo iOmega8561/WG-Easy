@@ -1,43 +1,30 @@
 # WireGuard Easy
 
-![Status](https://img.shields.io/badge/status-active-brightgreen.svg?logo=git)
-![License](https://img.shields.io/badge/license-cc%20by--nc--sa%204.0-brightgreen.svg?logo=open-source-initiative)
+A refined fork of [WireGuard Easy](https://github.com/wg-easy/wg-easy) **v14** optimized for configuration management.
 
-A streamlined fork of [**WireGuard Easy**](https://github.com/wg-easy/wg-easy) by **WeeJeWel**, designed to facilitate configuration management-only use cases. This version does **not run WireGuard inside the container by default**, making it ideal for setups where WireGuard is already configured on the host via NetworkManager or another method. It can still spin up WG by itself if needed, more on that below.
+**Core Philosophy:** This version decouples the management UI from the WireGuard implementation. It is designed for environments—such as rootless Podman or bare-metal deployments under non-root users—where you lack the necessary privileges to manage kernel interfaces, but still require a clean, modern UI to generate and maintain your configuration.
 
 ![Screenshot](./assets/screenshot.png "Screenshot")
 
----
+## 🏗 Why This Fork?
 
-## 🚀 Why This Fork?
-
-This fork was created to address a specific need: managing WireGuard configurations through a clean, modern web interface, while retaing the ability to **NOT** run WireGuard inside the container itself. This approach works particularly well in rootless Podman environments where containers don't need NET_ADMIN privileges.
-
-The web UI lets you manage clients through a clean interface—create, edit, delete clients, download configs, and view QR codes. The application is minimal and lightweight, and the new **React** front-end supports automatic light/dark mode along with multiple languages.
-
----
-
-## 🛠 Tech Stack
-
-This fork features a **complete frontend rewrite** from the ground up, replacing the original plain HTML templates with a modern, maintainable architecture. The new frontend uses **TypeScript + React** for a fully typed, component-based structure, built with **Vite** for fast development and optimized production builds. Styling is handled with **Tailwind CSS**, enabling a consistent, responsive design system throughout the application.
-
-The new frontend is seamlessly integrated with the existing backend, addressing the maintainability issues of the previous architecture, which relied on plain HTML with static dependency injection. This modern stack makes the codebase significantly easier to extend, test, and maintain going forward.
+* **Modern Stack:** Frontend fully rewritten in **React + TypeScript**, built with **Vite**, and styled with **Tailwind CSS**.
+* **Decoupling:** By omitting the ```WG_MANAGED``` environment variable entirely, the container acts strictly as a static configuration UI. This is critical for **bare-metal users** or **rootless container environments** where the user cannot modify kernel interfaces or acquire *NET_ADMIN* capabilities.
+* **Modern Networking (nftables):** Default routing and NAT rules are handled directly via nftables rather than legacy iptables. This ensures seamless compatibility with modern Linux kernels, where legacy iptables modules are effectively deprecated.
 
 ---
 
 ## 🏁 Quick Start
 
-To deploy `wg-easy`, choose the configuration that matches your networking requirements.
+### 1. Configuration Only (External WireGuard)
 
-### 1. Standard Deployment (No internal WireGuard tunnel)
-
-Use this configuration if WireGuard is managed externally or if the container is only acting as a configuration UI.
+Use this if WireGuard is managed natively on the host (e.g., via systemd-networkd or wg-quick) or if you are running under a restricted non-root user. Do **not** set the ```WG_MANAGED``` variable.
 
 ```bash
 podman run -d \
   --name=wg-easy \
-  -e WG_HOST=<YOUR_SERVER_IP> \
-  -e PASSWORD_HASH=<YOUR_ADMIN_PASSWORD_HASH> \
+  -e WG_HOST=<SERVER_IP> \
+  -e PASSWORD_HASH=<BCRYPT_HASH> \
   -v ~/.wg-easy:/opt/wg \
   -p 3000:3000/tcp \
   --userns keep-id \
@@ -45,9 +32,9 @@ podman run -d \
 
 ```
 
-### 2. Full WireGuard Tunnel Deployment
+### 2. Full-Stack Deployment (Internal WireGuard)
 
-Use this configuration to enable internal WireGuard tunnel management. This requires elevated networking capabilities and kernel parameters.
+Use this only if the container has the required ```CAP_NET_ADMIN``` to manage the WireGuard interface directly. The presence of ```WG_MANAGED``` triggers the internal management.
 
 ```bash
 podman run -d \
@@ -57,9 +44,9 @@ podman run -d \
   --cap-add=SYS_MODULE \
   --sysctl net.ipv4.ip_forward=1 \
   --sysctl net.ipv4.conf.all.src_valid_mark=1 \
-  -e WG_HOST=<YOUR_SERVER_IP> \
+  -e WG_HOST=<SERVER_IP> \
   -e WG_MANAGED=true \
-  -e PASSWORD_HASH=<YOUR_ADMIN_PASSWORD_HASH> \
+  -e PASSWORD_HASH=<BCRYPT_HASH> \
   -v ~/.wg-easy:/opt/wg \
   -p 3000:3000/tcp \
   -p 51820:51820/udp \
@@ -68,13 +55,8 @@ podman run -d \
 
 ```
 
-* **`<YOUR_SERVER_IP>`**: Public IP or FQDN of your host.
-* **`<YOUR_ADMIN_PASSWORD_HASH>`**: Bcrypt hash for the Web UI.
-* **Port 51820/udp**: Must be exposed to accept incoming WireGuard client connections.
-
 ---
 
-## 🙏 Credits & Original Repo
+## ⚖️ Credits
 
-* Original author: **WeeJeWel**
-* Source project: 👉 [WireGuard Easy on GitHub](https://github.com/wg-easy/wg-easy)
+Based on [WireGuard Easy](https://github.com/wg-easy/wg-easy) by **WeeJeWel**. Licensed under CC BY-NC-SA 4.0.
