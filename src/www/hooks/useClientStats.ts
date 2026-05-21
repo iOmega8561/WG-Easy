@@ -9,7 +9,7 @@ function useClientStats(authenticated: boolean) {
   const [clients, setClients] = useState<Client[]>([]);
   const [stats, setStats] = useState<Record<string, ClientStats>>({});
   
-  const prevClientsRef = useRef<Client[]>(new Array());
+  const prevClientsRef = useRef<Client[]>([]);
   const lastFetchRef = useRef<number>(Date.now());
 
   useEffect(() => {
