@@ -3,12 +3,13 @@
 
 'use strict';
 
+const WireGuard = require('./lib/WireGuard');
 const Server = require('./lib/Server');
-new Server();
 
-const WireGuard = require('./lib/WireGuard').shared;
+const wgService = new WireGuard();
+new Server(wgService);
 
-WireGuard.getConfig()
+wgService.getConfig()
   .catch((err) => {
     console.error(err);
 
@@ -20,7 +21,7 @@ process.on('SIGTERM', async () => {
   // eslint-disable-next-line no-console
   console.log('SIGTERM signal received.');
   
-  await WireGuard.Shutdown();
+  await wgService.Shutdown();
 
   process.exit(0);
 });

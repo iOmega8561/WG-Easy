@@ -3,6 +3,7 @@
 
 'use strict';
 
+const bcrypt = require('bcryptjs');
 const childProcess = require('child_process');
 
 module.exports = class Util {
@@ -78,7 +79,7 @@ module.exports = class Util {
     });
   }
 
-  static generateDefaultNft = (net, port, dev) => {  
+  static generateDefaultNft(net, port, dev) {  
     const postUp = [
       `nft 'add table inet wg_filter_${dev}'`,
       `nft 'add chain inet wg_filter_${dev} input { type filter hook input priority filter; }'`,
@@ -97,5 +98,25 @@ module.exports = class Util {
     ].join('; ');
   
     return { postUp, postDown };
-  }; 
+  };
+
+  /**
+   * Checks if `password` matches the PASSWORD_HASH.
+   *
+   * If environment variable is not set, the password is always invalid.
+   *
+   * @param {string} password String to test
+   * @returns {boolean} true if matching environment, otherwise false
+   */
+  static isPasswordValid(password, hash) {
+    if (typeof password !== 'string') {
+      return false;
+    }
+
+    if (hash) {
+      return bcrypt.compareSync(password, hash);
+    }
+
+    return false;
+  };
 };
