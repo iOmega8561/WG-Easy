@@ -30,6 +30,11 @@ namespace Props {
     onDismiss: () => void
   }
 
+  export interface EditClient extends Dismissable {
+    client: Client,
+    onUpdate: () => void
+  }
+
   export interface Editable {
     value: string,
     textClass: string,
