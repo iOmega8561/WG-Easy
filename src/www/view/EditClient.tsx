@@ -27,7 +27,7 @@ const NewClient: React.FC<Props.EditClient> = ({
       content={<div className="
         flex flex-col 
         items-center justify-center
-        gap-6">
+        gap-4">
           <input
             type="text"
             placeholder={t('name')}
