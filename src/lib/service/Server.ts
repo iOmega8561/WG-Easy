@@ -253,7 +253,7 @@ class Server {
         return { success: true };
       }));
 
-    const publicDir = resolve(import.meta.dirname, '../../www');
+    const publicDir = resolve(import.meta.dirname, '../www');
     app.use(
       defineEventHandler((event) => {
         return serveStatic(event, {
