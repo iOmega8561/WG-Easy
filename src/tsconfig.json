@@ -10,8 +10,8 @@
     "allowJs": true,
     "checkJs": false,
     "noEmit": true,
-    "moduleResolution": "nodenext",
-    "module": "nodenext",
+    "moduleResolution": "bundler",
+    "module": "esnext",
     "target": "esnext",
     "types": [],
     // For nodejs:

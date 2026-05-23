@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
-import backendConfig from './config.js';
+import backendConfig from './lib/config/env';
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
