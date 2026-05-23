@@ -1,51 +1,39 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable no-undef */
-
 'use strict';
 
-const crypto = require('node:crypto');
-const { createServer } = require('node:http');
-const { stat, readFile } = require('node:fs/promises');
-const { resolve, sep } = require('node:path');
+import { createServer } from 'node:http';
+import { stat, readFile } from 'node:fs/promises';
+import { resolve, sep } from 'node:path';
 
-const expressSession = require('express-session');
-const debug = require('debug')('Server');
+import debug from 'debug';
 
-const {
+import {
+  App,
   createApp,
   createError,
   createRouter,
   defineEventHandler,
-  fromNodeMiddleware,
   getRouterParam,
   toNodeListener,
   readBody,
   setHeader,
   serveStatic,
-} = require('h3');
+  getRequestHeader,
+} from 'h3';
 
-const {
-  PORT,
-  WEBUI_HOST,
-  RELEASE,
-  PASSWORD_HASH
-} = require('../config');
+import WireGuard from './WireGuard';
+import env from '../config/env';
+import { isPasswordValid } from './Utility';
+import { getAppSession } from '../config/session';
 
-const Util = require('./Util')
+const requiresPassword = !!env.PASSWORD_HASH;
 
-const requiresPassword = !!PASSWORD_HASH;
+class Server {
 
-module.exports = class Server {
+  app: App;
 
-  constructor(wgService) {
+  constructor(wgService: WireGuard) {
     const app = createApp();
     this.app = app;
-
-    app.use(fromNodeMiddleware(expressSession({
-      secret: crypto.randomBytes(256).toString('hex'),
-      resave: true,
-      saveUninitialized: true,
-    })));
 
     const router = createRouter();
     app.use(router);
@@ -53,15 +41,17 @@ module.exports = class Server {
     router
       .get('/api/release', defineEventHandler((event) => {
         setHeader(event, 'Content-Type', 'application/json');
-        return RELEASE;
+        return env.RELEASE;
       }))
-
-      // Authentication
-      .get('/api/session', defineEventHandler((event) => {
-        const authenticated = requiresPassword
-          ? !!(event.node.req.session && event.node.req.session.authenticated)
-          : true;
-
+      // Authentication - GET
+      .get('/api/session', defineEventHandler(async (event) => {
+        let authenticated = true;
+    
+        if (requiresPassword) {
+          const session = await getAppSession(event);
+          authenticated = !!session.data?.authenticated;
+        }
+    
         return {
           requiresPassword,
           authenticated,
@@ -74,48 +64,60 @@ module.exports = class Server {
           // if no password is required, the API should never be called.
           // Do not automatically authenticate the user.
           throw createError({
-            status: 401,
+            statusCode: 401,
+            statusMessage: 'Unauthorized',
             message: 'Invalid state',
           });
         }
 
-        if (!Util.isPasswordValid(password, PASSWORD_HASH)) {
+        if (!isPasswordValid(password, env.PASSWORD_HASH)) {
           throw createError({
-            status: 401,
+            statusCode: 401,
+            statusMessage: 'Unauthorized',
             message: 'Incorrect Password',
           });
         }
 
-        event.node.req.session.authenticated = true;
-        event.node.req.session.save();
+        const session = await getAppSession(event);
+        await session.update({
+          authenticated: true
+        });
 
-        debug(`New Session: ${event.node.req.session.id}`);
+        debug(`New Session: ${session.id}`);
 
         return { success: true };
       }));
 
     // WireGuard
-    app.use(
-      fromNodeMiddleware((req, res, next) => {
-        if (!requiresPassword || !req.url.startsWith('/api/')) {
-          return next();
+    app.use(defineEventHandler(async (event) => {
+        if (!requiresPassword || !event.path.startsWith('/api/')) {
+          return;
         }
 
-        if (req.session && req.session.authenticated) {
-          return next();
+        const session = await getAppSession(event);
+        if (session.data && session.data.authenticated) {
+          return;
         }
-
-        if (req.url.startsWith('/api/') && req.headers['authorization']) {
-          if (Util.isPasswordValid(req.headers['authorization'], PASSWORD_HASH)) {
-            return next();
+    
+        const authHeader = getRequestHeader(event, 'authorization');
+        
+        if (event.path.startsWith('/api/') && authHeader) {
+          if (isPasswordValid(authHeader, env.PASSWORD_HASH)) {
+            await session.update({ authenticated: true });
+            return;
           }
-          return res.status(401).json({
-            error: 'Incorrect Password',
+
+          throw createError({
+            statusCode: 401,
+            statusMessage: 'Unauthorized',
+            data: { error: 'Incorrect Password' }
           });
         }
 
-        return res.status(401).json({
-          error: 'Not Logged In',
+        throw createError({
+          statusCode: 401,
+          statusMessage: 'Unauthorized',
+          data: { error: 'Not Logged In' }
         });
       }),
     );
@@ -124,11 +126,12 @@ module.exports = class Server {
     app.use(router2);
 
     router2
-      .delete('/api/session', defineEventHandler((event) => {
-        const sessionId = event.node.req.session.id;
-
-        event.node.req.session.destroy();
-
+      .delete('/api/session', defineEventHandler(async (event) => {
+        const session = await getAppSession(event);
+        const sessionId = session.id;
+    
+        await session.clear();
+    
         debug(`Deleted Session: ${sessionId}`);
         return { success: true };
       }))
@@ -137,13 +140,19 @@ module.exports = class Server {
       }))
       .get('/api/wireguard/client/:clientId/qrcode.svg', defineEventHandler(async (event) => {
         const clientId = getRouterParam(event, 'clientId');
+        if (!clientId) throw createError({ status: 400 });
+
         const svg = await wgService.getClientQRCodeSVG({ clientId });
         setHeader(event, 'Content-Type', 'image/svg+xml');
         return svg;
       }))
       .get('/api/wireguard/client/:clientId/configuration', defineEventHandler(async (event) => {
         const clientId = getRouterParam(event, 'clientId');
+        if (!clientId) throw createError({ status: 400 });
+
         const client = await wgService.getClient({ clientId });
+        if (!client) throw createError({ status: 404 });
+
         const config = await wgService.getClientConfiguration({ clientId });
         const configName = client.name
           .replace(/[^a-zA-Z0-9_=+.-]/g, '-')
@@ -161,6 +170,7 @@ module.exports = class Server {
       }))
       .delete('/api/wireguard/client/:clientId', defineEventHandler(async (event) => {
         const clientId = getRouterParam(event, 'clientId');
+        if (!clientId) throw createError({ status: 400 });
         await wgService.deleteClient({ clientId });
         return { success: true };
       }))
@@ -169,6 +179,7 @@ module.exports = class Server {
         if (clientId === '__proto__' || clientId === 'constructor' || clientId === 'prototype') {
           throw createError({ status: 403 });
         }
+        if (!clientId) throw createError({ status: 400 });
         await wgService.enableClient({ clientId });
         return { success: true };
       }))
@@ -177,6 +188,7 @@ module.exports = class Server {
         if (clientId === '__proto__' || clientId === 'constructor' || clientId === 'prototype') {
           throw createError({ status: 403 });
         }
+        if (!clientId) throw createError({ status: 400 });
         await wgService.disableClient({ clientId });
         return { success: true };
       }))
@@ -185,6 +197,7 @@ module.exports = class Server {
         if (clientId === '__proto__' || clientId === 'constructor' || clientId === 'prototype') {
           throw createError({ status: 403 });
         }
+        if (!clientId) throw createError({ status: 400 });
         const { name } = await readBody(event);
         await wgService.updateClientName({ clientId, name });
         return { success: true };
@@ -194,12 +207,13 @@ module.exports = class Server {
         if (clientId === '__proto__' || clientId === 'constructor' || clientId === 'prototype') {
           throw createError({ status: 403 });
         }
+        if (!clientId) throw createError({ status: 400 });
         const { address } = await readBody(event);
         await wgService.updateClientAddress({ clientId, address });
         return { success: true };
       }));
 
-    const safePathJoin = (base, target) => {
+    const safePathJoin = (base: string, target: string) => {
       // Manage web root (edge case)
       if (target === '/') {
         return `${base}${sep}`;
@@ -239,9 +253,7 @@ module.exports = class Server {
         return { success: true };
       }));
 
-    // Static assets
-    // Se la cartella dist è dentro www
-    const publicDir = resolve(__dirname, '../www/dist');
+    const publicDir = resolve(import.meta.dirname, '../../www');
     app.use(
       defineEventHandler((event) => {
         return serveStatic(event, {
@@ -271,8 +283,10 @@ module.exports = class Server {
       }),
     );
 
-    createServer(toNodeListener(app)).listen(PORT, WEBUI_HOST);
-    debug(`Listening on http://${WEBUI_HOST}:${PORT}`);
+    createServer(toNodeListener(app)).listen(env.PORT, env.WEBUI_HOST);
+    debug(`Listening on http://${env.WEBUI_HOST}:${env.PORT}`);
   }
 
 };
+
+export default Server;
