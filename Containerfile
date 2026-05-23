@@ -52,10 +52,7 @@ RUN npm install --omit=dev && \
     npm cache clean --force
 
 # Copy only the strictly necessary files from Stage 1
-COPY --from=builder --chown=node /opt/wg-easy/lib       /opt/wg-easy/lib
-COPY --from=builder --chown=node /opt/wg-easy/www/dist  /opt/wg-easy/www/dist
-COPY --from=builder --chown=node /opt/wg-easy/config.js /opt/wg-easy/
-COPY --from=builder --chown=node /opt/wg-easy/server.js /opt/wg-easy/
+COPY --from=builder --chown=node /opt/wg-easy/dist       /opt/wg-easy/dist
 COPY --from=builder --chown=node /opt/wg-easy/wgpw.mjs  /opt/wg-easy/
 
-ENTRYPOINT ["/usr/local/bin/npm", "run", "serve"]
+ENTRYPOINT ["/usr/local/bin/npm", "run", "start"]
