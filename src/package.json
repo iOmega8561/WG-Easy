@@ -7,7 +7,7 @@
     "build:frontend": "vite build",
     "build:backend": "tsup ./lib/main.ts --format esm --target node20 --out-dir ./dist/lib --clean",
     "build": "npm run build:frontend && npm run build:backend",
-    "start": "NODE_ENV=production node ./src/dist/lib/main.js",
+    "start": "NODE_ENV=production node ./dist/lib/main.js",
     "lint": "eslint ."
   },
   "author": "Giuseppe Rocco",
