@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   root: './www',
   build: {
-    outDir: './dist',
+    outDir: '../dist/www',
     emptyOutDir: true,
   },
   server: {
