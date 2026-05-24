@@ -6,7 +6,12 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig(
-  { ignores: ["www/dist", "node_modules"] },
+  { 
+    ignores: [
+      "dist", 
+      "node_modules"
+    ] 
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -14,6 +19,7 @@ export default defineConfig(
     languageOptions: {
       ecmaVersion: 2024,
       parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
         project: ["./tsconfig.json"]
       },
     },
