@@ -5,7 +5,7 @@ import childProcess from 'child_process';
 
 import ExecProps from '../types/ExecProps'
 
-export function isValidIPv4(str: string) {
+export function isValidIPv4(str: string): boolean {
   const blocks: string[] = str.split('.');
   if (blocks.length !== 4) return false;
 
@@ -44,7 +44,14 @@ export async function exec(
   });
 }
 
-export function generateDefaultNft(net: string, port: number, dev: string) {  
+export function generateDefaultNft(
+  net: string, 
+  port: number, 
+  dev: string
+): { 
+  postUp: string, 
+  postDown: string 
+} {  
   const postUp = [
     `nft 'add table inet wg_filter_${dev}'`,
     `nft 'add chain inet wg_filter_${dev} input { type filter hook input priority filter; }'`,
@@ -73,7 +80,10 @@ export function generateDefaultNft(net: string, port: number, dev: string) {
  * @param {string} password String to test
  * @returns {boolean} true if matching environment, otherwise false
  */
-export function isPasswordValid(password: string, hash: string | undefined) {
+export function isPasswordValid(
+  password: string, 
+  hash: string | undefined
+): boolean {
   if (typeof password !== 'string') {
     return false;
   }
