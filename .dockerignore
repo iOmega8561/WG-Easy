@@ -3,4 +3,4 @@ src/node_modules
 src/package-lock.json
 
 # Products
-src/www/dist
+src/dist

@@ -1,4 +1,5 @@
-/** @type {import('tailwindcss').Config} */
+import { Config } from 'tailwindcss'
+
 export default {
   content: [
     "./www/index.html",
@@ -8,4 +9,4 @@ export default {
     extend: {},
   },
   plugins: [],
-}
+} satisfies Config

@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable no-undef */
-
 'use strict';
 
-const WireGuard = require('./lib/WireGuard');
-const Server = require('./lib/Server');
+import WireGuard from './service/WireGuard';
+import Server from './service/Server';
 
 const wgService = new WireGuard();
 new Server(wgService);
@@ -16,18 +13,21 @@ wgService.getConfig()
     process.exit(1);
   });
 
+async function shutdown() {
+  await wgService.Shutdown();
+  process.exit(0);
+}
+
 // Handle terminate signal
 process.on('SIGTERM', async () => {
   // eslint-disable-next-line no-console
   console.log('SIGTERM signal received.');
-  
-  await wgService.Shutdown();
-
-  process.exit(0);
+  await shutdown();
 });
 
 // Handle interrupt signal
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   // eslint-disable-next-line no-console
   console.log('SIGINT signal received.');
+  await shutdown();
 });
