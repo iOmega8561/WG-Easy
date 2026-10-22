@@ -32,6 +32,7 @@ const Interface: React.FC<Props.Interface> = ({
 
   return (
     <div className="
+    max-h-full flex flex-col
     bg-white dark:bg-neutral-700 
     rounded-lg shadow-md 
     overflow-hidden relative">
@@ -81,7 +82,10 @@ const Interface: React.FC<Props.Interface> = ({
         </div>
       </div>
   
-      <div className="divide-y dark:divide-neutral-600">
+      <div className="
+      flex-1 min-h-0
+      overflow-y-auto overscroll-contain
+      divide-y dark:divide-neutral-600">
         {clients.length === 0 ? (
           <div className="
           flex p-6 justify-center 
