@@ -126,7 +126,7 @@ const ClientRow: React.FC<Props.ClientRow> = ({
 
         <div className="
         flex items-center gap-1
-        w-1/3 justify-end">
+         justify-end">
           <Toggle
             active={client.enabled}
             onClick={() => toggleEnabled()}
