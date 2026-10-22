@@ -29,6 +29,7 @@ LABEL org.opencontainers.image.source=$REPO_URL
 RUN apk update && \
     apk add --no-cache --update \
     wireguard-tools \
+    wireguard-go \
     nftables \
     sudo && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* && \
