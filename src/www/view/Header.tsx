@@ -21,7 +21,7 @@ const Header: React.FC<Props.Header> = ({
 
   return (
     <div className="
-    flex mb-8
+    flex shrink-0
     justify-between items-center">
       <h1 className="
       flex items-center

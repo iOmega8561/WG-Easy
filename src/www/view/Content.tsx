@@ -43,15 +43,16 @@ export default function Content() {
   }
 
   return (
-    <main>
+    <main className="h-dvh overflow-hidden">
       <div className="
-      min-h-screen 
+      h-full
       bg-gray-50 dark:bg-neutral-800 
       text-gray-900 dark:text-neutral-200">
         <div className="
         container 
         max-w-3xl 
-        mx-auto px-4 py-8">
+        mx-auto px-4 py-8 max-sm:py-4
+        h-full flex flex-col gap-6">
           
           <Header 
             requiresPassword={requiresPassword} 
