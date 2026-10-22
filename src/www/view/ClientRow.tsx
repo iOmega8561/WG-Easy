@@ -77,7 +77,7 @@ const ClientRow: React.FC<Props.ClientRow> = ({
         {stats && client.latestHandshakeAt && client.enabled && (
           <div className="
           flex-1 flex justify-end
-          gap-8 items-center 
+          min-w-fit mx-8 gap-8 items-center 
           text-sm max-md:hidden">
             <div className="
             flex flex-col 
