@@ -1,5 +1,5 @@
 interface Client {
-  id: string,
+  id?: string,
   name: string,
   enabled: boolean,
   address: string,
