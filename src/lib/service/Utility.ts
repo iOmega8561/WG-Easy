@@ -2,7 +2,7 @@
 
 import bcrypt from 'bcryptjs';
 import childProcess from 'child_process';
-
+import { createHash } from 'crypto';
 import ExecProps from '../types/ExecProps'
 
 export function isValidIPv4(str: string): boolean {
@@ -72,6 +72,9 @@ export function generateDefaultNft(
   return { postUp, postDown };
 };
 
+const MAX_CACHE_SIZE = 50;
+const cache = new Map<string, boolean>();
+
 /**
  * Checks if `password` matches the PASSWORD_HASH.
  *
@@ -84,16 +87,24 @@ export function isPasswordValid(
   password: string, 
   hash: string | undefined
 ): boolean {
-  if (typeof password !== 'string') {
-    return false;
+  if (typeof password !== 'string' || !hash) return false;
+
+  const key = createHash('sha256').update(password).digest('hex');
+
+  if (cache.has(key)) {
+    return cache.get(key)!;
   }
 
-  if (hash) {
-    return bcrypt.compareSync(password, hash);
+  const isValid = bcrypt.compareSync(password, hash);
+
+  if (cache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey !== undefined) cache.delete(oldestKey);
   }
 
-  return false;
-};
+  cache.set(key, isValid);
+  return isValid;
+}
 
 /**
  * Extracts username and password from an Authorization header with Basic scheme.
