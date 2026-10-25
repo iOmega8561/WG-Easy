@@ -279,7 +279,6 @@ Endpoint = ${env.WG_HOST}:${env.WG_CONFIG_PORT}`;
     // Create Client
     const id: string = crypto.randomUUID();
     const client: Client = {
-      id,
       name: query.name,
       address,
       privateKey,
