@@ -22,7 +22,10 @@ import {
 
 import WireGuard from './WireGuard';
 import env from '../config/env';
-import { isPasswordValid } from './Utility';
+import { 
+  isPasswordValid,
+  extractBasicCredentials
+} from './Utility';
 import { getAppSession } from '../config/session';
 
 const requiresPassword = !!env.PASSWORD_HASH;
@@ -43,11 +46,19 @@ class Server {
         setHeader(event, 'Content-Type', 'application/json');
         return env.RELEASE;
       }))
-      // Authentication - GET
       .get('/api/session', defineEventHandler(async (event) => {
         let authenticated = true;
-    
-        if (requiresPassword) {
+
+        const authHeader = getRequestHeader(event, 'authorization');
+        const credentials = extractBasicCredentials(authHeader);
+        
+        if (requiresPassword && credentials) {
+          authenticated = isPasswordValid(
+            credentials.password, 
+            env.PASSWORD_HASH
+          )
+
+        } else if (requiresPassword) {
           const session = await getAppSession(event);
           authenticated = !!session.data?.authenticated;
         }
@@ -88,39 +99,29 @@ class Server {
         return { success: true };
       }));
 
-    // WireGuard
+    // Authentication Middleware
     app.use(defineEventHandler(async (event) => {
-        if (!requiresPassword || !event.path.startsWith('/api/')) {
-          return;
-        }
+      if (!requiresPassword || !event.path.startsWith('/api/')) {
+        return;
+      }
 
-        const session = await getAppSession(event);
-        if (session.data && session.data.authenticated) {
-          return;
-        }
-    
-        const authHeader = getRequestHeader(event, 'authorization');
-        
-        if (event.path.startsWith('/api/') && authHeader) {
-          if (isPasswordValid(authHeader, env.PASSWORD_HASH)) {
-            await session.update({ authenticated: true });
-            return;
-          }
+      const authHeader = getRequestHeader(event, 'authorization');
+      const credentials = extractBasicCredentials(authHeader);
+      if (credentials && isPasswordValid(credentials.password, env.PASSWORD_HASH)) {        
+        return;
+      }
 
-          throw createError({
-            statusCode: 401,
-            statusMessage: 'Unauthorized',
-            data: { error: 'Incorrect Password' }
-          });
-        }
+      const session = await getAppSession(event);
+      if (session.data && session.data.authenticated) {
+        return;
+      }
 
-        throw createError({
-          statusCode: 401,
-          statusMessage: 'Unauthorized',
-          data: { error: 'Not Logged In' }
-        });
-      }),
-    );
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized',
+        data: { error: 'Not Logged In' }
+      });
+    }));
 
     const router2 = createRouter();
     app.use(router2);
