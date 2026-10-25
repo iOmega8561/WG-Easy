@@ -94,3 +94,47 @@ export function isPasswordValid(
 
   return false;
 };
+
+/**
+ * Extracts username and password from an Authorization header with Basic scheme.
+ * 
+ * Format: "Basic base64(username:password)"
+ * 
+ * @returns { username: string, password: string } or undefined if invalid
+ */
+export function extractBasicCredentials(
+  authHeader: string | string[] | undefined
+): { 
+  username: string; 
+  password: string 
+} | undefined {
+  if (Array.isArray(authHeader)) {
+    authHeader = authHeader[0];
+  }
+
+  if (!authHeader || typeof authHeader !== 'string') {
+    return undefined;
+  }
+
+  const match = authHeader.match(/^Basic\s+(.+)$/i);
+  if (!match || !match[1]) {
+    return undefined;
+  }
+
+  try {
+    const decoded = Buffer.from(match[1], 'base64').toString('utf-8');
+    
+    // Split sul primo ":" (la password può contenere ":")
+    const colonIndex = decoded.indexOf(':');
+    if (colonIndex === -1) {
+      return undefined;
+    }
+
+    const username = decoded.substring(0, colonIndex);
+    const password = decoded.substring(colonIndex + 1);
+
+    return { username, password };
+  } catch {
+    return undefined;
+  }
+}
