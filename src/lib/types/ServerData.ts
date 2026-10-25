@@ -4,7 +4,8 @@ interface ServerData {
   server: {
     publicKey: string,
     privateKey: string,
-    address: string
+    address: string,
+    subnetMask: string
   },
   clients: { [key: string]: Client }
 }
