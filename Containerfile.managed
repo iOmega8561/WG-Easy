@@ -1,0 +1,54 @@
+# WG-Easy, managed: also brings the interface up with wg-quick and nftables. It runs as root
+# inside its rootless user namespace, with only NET_ADMIN. No sudo, no npm.
+#
+#   podman build -f Containerfile.managed -t localhost/wg-easy:managed .
+#
+# The configuration-only image: Containerfile
+#
+# It runs nothing but `node dist/lib/main.js` and writes only to /opt/wg, so it works on a
+# read-only root filesystem.
+
+ARG NODE_VERSION=22
+
+# ---------- Build: the web interface, and a server bundled with all its dependencies ----------
+FROM docker.io/library/node:${NODE_VERSION}-alpine AS builder
+
+WORKDIR /opt/wg-easy
+COPY ./src/package*.json ./
+RUN npm install
+
+COPY ./src ./
+RUN npm run build
+
+# ---------- Runtime: wg-quick, wireguard-go and nftables, nothing else ----------
+FROM docker.io/library/node:${NODE_VERSION}-alpine
+
+ARG REPO_URL
+LABEL org.opencontainers.image.title="WG-Easy (managed)" \
+      org.opencontainers.image.description="WireGuard configuration UI that also manages the interface" \
+      org.opencontainers.image.authors="Giuseppe Rocco" \
+      org.opencontainers.image.licenses="CC BY-NC-SA 4.0" \
+      org.opencontainers.image.source=$REPO_URL
+
+# wireguard-go is the fallback wg-quick uses when the kernel can't create a WireGuard
+# interface. npm, yarn and their caches are removed: the image runs node, not npm.
+RUN apk add --no-cache wireguard-tools wireguard-go nftables && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx \
+           /usr/local/lib/node_modules/corepack /usr/local/bin/corepack \
+           /opt/yarn-* /usr/local/bin/yarn /usr/local/bin/yarnpkg /root/.npm /tmp/* && \
+    install -d -m 700 /opt/wg
+
+COPY --from=builder /opt/wg-easy/dist /opt/wg-easy/dist
+
+ENV NODE_ENV=production \
+    WG_PATH=/opt/wg
+
+# wg-quick refuses to run as anyone but root, and re-executes itself through sudo otherwise.
+# There is no sudo here: the process is root of its user namespace, which under rootless
+# Podman is the unprivileged user who started the container.
+USER 0
+WORKDIR /opt/wg-easy
+EXPOSE 3000/tcp 51820/udp
+
+ENTRYPOINT ["node"]
+CMD ["/opt/wg-easy/dist/lib/main.js"]
