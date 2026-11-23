@@ -1,59 +1,81 @@
-# Build-time arguments
-ARG REPO_URL
+# WG-Easy comes as two images, built from this file with --target:
+#
+#   config   (default)  Writes the configuration and nothing else: no WireGuard tools, no shell,
+#                       no package manager, no sudo. Distroless, runs as an unprivileged user.
+#   managed             Also brings the interface up with wg-quick and nftables. It runs as
+#                       root inside its rootless user namespace, with only NET_ADMIN.
+#
+#   podman build --target config  -t localhost/wg-easy:config  .
+#   podman build --target managed -t localhost/wg-easy:managed .
+#
+# Both run nothing but `node dist/lib/main.js`, and write only to /opt/wg: they work on a
+# read-only root filesystem.
 
-# Stage 1 -- Build
-FROM docker.io/library/node:alpine AS builder
+ARG NODE_VERSION=22
+
+# ---------- Build: the web interface, and a server bundled with all its dependencies ----------
+FROM docker.io/library/node:${NODE_VERSION}-alpine AS builder
 
 WORKDIR /opt/wg-easy
 COPY ./src/package*.json ./
 RUN npm install
 
 COPY ./src ./
-RUN npm run build
+RUN npm run build && \
+    install -d -m 700 /rootfs/opt/wg
 
-# Stage 2
-FROM docker.io/library/node:alpine as base
+# ---------- managed: wg-quick, wireguard-go and nftables, nothing else ----------
+FROM docker.io/library/node:${NODE_VERSION}-alpine AS managed
 
-# Metadata according to OCI standards
-LABEL org.opencontainers.image.title="WG-Easy"
-LABEL org.opencontainers.image.description="Easiest way to configure WireGuard"
-LABEL org.opencontainers.image.authors="Giuseppe Rocco"
-LABEL org.opencontainers.image.licenses="CC BY-NC-SA 4.0"
-LABEL org.opencontainers.image.source=$REPO_URL
+ARG REPO_URL
+LABEL org.opencontainers.image.title="WG-Easy (managed)" \
+      org.opencontainers.image.description="WireGuard configuration UI that also manages the interface" \
+      org.opencontainers.image.authors="Giuseppe Rocco" \
+      org.opencontainers.image.licenses="CC BY-NC-SA 4.0" \
+      org.opencontainers.image.source=$REPO_URL
 
-# 1. wireguard-tools: provides wg and wg-quick commands for WireGuard
-# 2. cleanup: remove temporary files to keep image lean
-# 3. create directories for configuration and application
-# 4. sudoers.d drop-in for no-password use by user node
-# 5. create wrapper script /usr/local/bin/wgpw for password management
-RUN apk update && \
-    apk add --no-cache --update \
-    wireguard-tools \
-    wireguard-go \
-    nftables \
-    sudo && \
-    rm -rf /tmp/* /var/tmp/* /var/cache/apk/* && \
-    install -o 1000 -g 1000 -d /opt/wg-easy -m 700 && \
-    install -o 1000 -g 1000 -d /opt/wg -m 700 && \
-    echo "node ALL=NOPASSWD: ALL" > /etc/sudoers.d/node && \
-    echo -e '#!/bin/sh\nset -e\nnode /opt/wg-easy/wgpw.mjs "$@"' > /usr/local/bin/wgpw && \
-    chmod +x /usr/local/bin/wgpw
+# wireguard-go is the fallback wg-quick uses when the kernel can't create a WireGuard
+# interface. npm and its cache are removed: the image runs node, not npm.
+RUN apk add --no-cache wireguard-tools wireguard-go nftables && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx \
+           /usr/local/lib/node_modules/corepack /usr/local/bin/corepack \
+           /opt/yarn-* /usr/local/bin/yarn /usr/local/bin/yarnpkg /root/.npm /tmp/* && \
+    install -d -m 700 /opt/wg
+COPY --from=builder /opt/wg-easy/dist /opt/wg-easy/dist
 
-# Expose the WG-Easy web management interface
-EXPOSE 3000/tcp
-ENV WG_PATH /opt/wg
+ENV NODE_ENV=production \
+    WG_PATH=/opt/wg
 
-# Switch to non-root user
-USER node
-
-# Install Node.js dependencies
+# wg-quick refuses to run as anyone but root, and re-executes itself through sudo otherwise.
+# There is no sudo here: the process is root of its user namespace, which under rootless
+# Podman is the unprivileged user who started the container.
+USER 0
 WORKDIR /opt/wg-easy
-COPY ./src/package*.json ./
-RUN npm install --omit=dev && \
-    npm cache clean --force
+EXPOSE 3000/tcp 51820/udp
 
-# Copy only the strictly necessary files from Stage 1
-COPY --from=builder --chown=node /opt/wg-easy/dist       /opt/wg-easy/dist
-COPY --from=builder --chown=node /opt/wg-easy/wgpw.mjs  /opt/wg-easy/
+ENTRYPOINT ["node"]
+CMD ["/opt/wg-easy/dist/lib/main.js"]
 
-ENTRYPOINT ["/usr/local/bin/npm", "run", "start"]
+# ---------- config: distroless, unprivileged, last so it is the default target ----------
+FROM gcr.io/distroless/nodejs${NODE_VERSION}-debian12:nonroot AS config
+
+ARG REPO_URL
+LABEL org.opencontainers.image.title="WG-Easy" \
+      org.opencontainers.image.description="WireGuard configuration UI, for hosts that run the interface themselves" \
+      org.opencontainers.image.authors="Giuseppe Rocco" \
+      org.opencontainers.image.licenses="CC BY-NC-SA 4.0" \
+      org.opencontainers.image.source=$REPO_URL
+
+# COPY doesn't keep the owner: the data directory is handed to the runtime user here.
+COPY --from=builder --chown=1000:1000 /rootfs/opt/wg /opt/wg
+COPY --from=builder /opt/wg-easy/dist /opt/wg-easy/dist
+
+ENV NODE_ENV=production \
+    WG_PATH=/opt/wg
+
+USER 1000:1000
+WORKDIR /opt/wg-easy
+EXPOSE 3000/tcp
+
+ENTRYPOINT ["/nodejs/bin/node"]
+CMD ["/opt/wg-easy/dist/lib/main.js"]

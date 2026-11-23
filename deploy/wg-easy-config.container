@@ -1,0 +1,42 @@
+# WG-Easy, configuration only: writes wg0.conf for a WireGuard interface the host runs itself
+# (wg-quick@wg0 or systemd-networkd). Rootless, read-only, no capabilities.
+#
+#   podman secret create wg-easy-password-hash -   # paste the bcrypt hash, then Ctrl-D
+#   install -Dm644 wg-easy-config.container -t ~/.config/containers/systemd/
+#   systemctl --user daemon-reload && systemctl --user start wg-easy-config
+
+[Unit]
+Description=WG-Easy (configuration only)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=wg-easy
+Image=ghcr.io/iomega8561/wg-easy:config
+# Behind a reverse proxy on the same host; drop 127.0.0.1 to reach it from the network.
+PublishPort=127.0.0.1:3000:3000
+
+# Your user is UID 1000 inside: wg0.conf and wg0.json in ~/.wg-easy stay yours.
+UserNS=keep-id:uid=1000,gid=1000
+# Lowercase z: the host's WireGuard has to read wg0.conf too.
+Volume=%h/.wg-easy:/opt/wg:z
+
+Environment=WG_HOST=vpn.example.org
+Environment=PASSWORD_HASH_FILE=/run/secrets/wg-easy-password-hash
+Secret=wg-easy-password-hash,type=mount,target=/run/secrets/wg-easy-password-hash,uid=1000,mode=0400
+
+# Immutable root filesystem, no capabilities, no privilege escalation.
+ReadOnly=true
+DropCapability=ALL
+NoNewPrivileges=true
+
+HealthCmd=["/nodejs/bin/node", "/opt/wg-easy/dist/lib/healthcheck.js"]
+HealthInterval=30s
+
+[Service]
+Restart=on-failure
+MemoryMax=256M
+TasksMax=64
+
+[Install]
+WantedBy=default.target

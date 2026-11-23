@@ -6,11 +6,13 @@ on:
       - master
     paths:
       - src/**
+      - Containerfile
   pull_request:
     branches:
       - master
     paths:
       - src/**
+      - Containerfile
   workflow_dispatch:
 
 jobs:
@@ -27,15 +29,26 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push using Podman
+    - name: Build and push both images using Podman
       run: |
         ACTOR=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
+        IMAGE=ghcr.io/$ACTOR/wg-easy
         SHA=${{ github.sha }}
-        podman build --squash \
+
+        # config is the default image, so it is also :latest.
+        podman build --squash --target config \
           --build-arg REPO_URL="${{ github.server_url }}/${{ github.repository }}" \
-          -t ghcr.io/$ACTOR/wg-easy:$SHA \
-          -t ghcr.io/$ACTOR/wg-easy:latest \
+          -t $IMAGE:config -t $IMAGE:config-$SHA -t $IMAGE:latest \
           . --file Containerfile
-        podman push ghcr.io/$ACTOR/wg-easy:$SHA
-        podman push ghcr.io/$ACTOR/wg-easy:latest
-        
+
+        podman build --squash --target managed \
+          --build-arg REPO_URL="${{ github.server_url }}/${{ github.repository }}" \
+          -t $IMAGE:managed -t $IMAGE:managed-$SHA \
+          . --file Containerfile
+
+        # Pull requests build both, but only master publishes them.
+        if [ "${{ github.event_name }}" != "pull_request" ]; then
+          for tag in config config-$SHA latest managed managed-$SHA; do
+            podman push $IMAGE:$tag
+          done
+        fi
