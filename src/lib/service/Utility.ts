@@ -2,6 +2,8 @@
 
 import bcrypt from 'bcryptjs';
 import { execFile } from 'node:child_process';
+import { accessSync, constants } from 'node:fs';
+import { delimiter, join } from 'node:path';
 import { createHash, createPrivateKey, createPublicKey, randomBytes } from 'node:crypto';
 import ExecProps from '../types/ExecProps'
 import Client from '../types/Client';
@@ -17,6 +19,20 @@ export function isValidIPv4(str: string): boolean {
   }
 
   return true;
+}
+
+/** Whether an executable can be found in PATH, the way execFile would look it up. */
+export function isInPath(name: string): boolean {
+  for (const dir of (process.env.PATH ?? '').split(delimiter)) {
+    if (!dir) continue;
+    try {
+      accessSync(join(dir, name), constants.X_OK);
+      return true;
+    } catch {
+      // not in this directory
+    }
+  }
+  return false;
 }
 
 /**

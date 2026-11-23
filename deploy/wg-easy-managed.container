@@ -26,7 +26,6 @@ User=0
 Volume=%h/.wg-easy:/opt/wg:Z
 
 Environment=WG_HOST=vpn.example.org
-Environment=WG_MANAGED=true
 Environment=PASSWORD_HASH_FILE=/run/secrets/wg-easy-password-hash
 Secret=wg-easy-password-hash,type=mount,target=/run/secrets/wg-easy-password-hash,mode=0400
 

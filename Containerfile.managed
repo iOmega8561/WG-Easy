@@ -42,7 +42,8 @@ RUN apk add --no-cache wireguard-tools wireguard-go nftables && \
 COPY --from=builder /opt/wg-easy/dist /opt/wg-easy/dist
 
 ENV NODE_ENV=production \
-    WG_PATH=/opt/wg
+    WG_PATH=/opt/wg \
+    WG_MANAGED=true
 
 # wg-quick refuses to run as anyone but root, and re-executes itself through sudo otherwise.
 # There is no sudo here: the process is root of its user namespace, which under rootless
