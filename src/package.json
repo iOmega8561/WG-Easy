@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build:frontend": "vite build",
-    "build:backend": "tsup ./lib/main.ts --format esm --target node20 --out-dir ./dist/lib --clean",
+    "build:backend": "tsup",
     "build": "npm run build:frontend && npm run build:backend",
     "start": "NODE_ENV=production node ./dist/lib/main.js",
     "lint": "eslint ."
