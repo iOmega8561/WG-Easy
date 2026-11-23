@@ -24,12 +24,13 @@ RUN npm run build && \
 # ---------- Runtime: distroless, unprivileged ----------
 FROM gcr.io/distroless/nodejs${NODE_VERSION}-debian12:nonroot
 
-ARG REPO_URL
+ARG REPO_URL REVISION
 LABEL org.opencontainers.image.title="WG-Easy" \
       org.opencontainers.image.description="WireGuard configuration UI, for hosts that run the interface themselves" \
       org.opencontainers.image.authors="Giuseppe Rocco" \
       org.opencontainers.image.licenses="CC BY-NC-SA 4.0" \
-      org.opencontainers.image.source=$REPO_URL
+      org.opencontainers.image.source=$REPO_URL \
+      org.opencontainers.image.revision=$REVISION
 
 # COPY doesn't keep the owner: the data directory is handed to the runtime user here.
 COPY --from=builder --chown=1000:1000 /rootfs/opt/wg /opt/wg

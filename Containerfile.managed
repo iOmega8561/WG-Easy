@@ -23,12 +23,13 @@ RUN npm run build
 # ---------- Runtime: wg-quick, wireguard-go and nftables, nothing else ----------
 FROM docker.io/library/node:${NODE_VERSION}-alpine
 
-ARG REPO_URL
+ARG REPO_URL REVISION_SHA
 LABEL org.opencontainers.image.title="WG-Easy (managed)" \
       org.opencontainers.image.description="WireGuard configuration UI that also manages the interface" \
       org.opencontainers.image.authors="Giuseppe Rocco" \
       org.opencontainers.image.licenses="CC BY-NC-SA 4.0" \
-      org.opencontainers.image.source=$REPO_URL
+      org.opencontainers.image.source=$REPO_URL \
+      org.opencontainers.image.revision=$REVISION
 
 # wireguard-go is the fallback wg-quick uses when the kernel can't create a WireGuard
 # interface. npm, yarn and their caches are removed: the image runs node, not npm.
