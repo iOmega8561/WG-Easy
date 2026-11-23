@@ -42,6 +42,8 @@ class Server {
     app.use(router);
 
     router
+      // Liveness for the container's health check: no authentication, no state.
+      .get('/healthz', defineEventHandler(() => 'ok'))
       .get('/api/release', defineEventHandler((event) => {
         setHeader(event, 'Content-Type', 'application/json');
         return env.RELEASE;
