@@ -1,13 +1,16 @@
 'use strict';
 
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'path';
 import debug from 'debug';
 import crypto from 'node:crypto'
 import QRCode from 'qrcode';
 
 import { 
-  exec, 
+  run, 
+  generateKeyPair,
+  generatePresharedKey,
   generateDefaultNft,
   intToIp,
   parseCIDR,
@@ -25,6 +28,11 @@ class WireGuard {
 
   private __configPromise: Promise<ServerData> | undefined
 
+  /** wg-quick names the interface after the file: wg0.conf brings up wg0. */
+  __confPath(): string {
+    return path.join(env.WG_PATH, 'wg0.conf');
+  }
+
   async __buildConfig(): Promise<ServerData> {
     this.__configPromise = Promise.resolve().then(async () => {
       if (!env.WG_HOST) {
@@ -38,10 +46,7 @@ class WireGuard {
         config = JSON.parse(config);
         debug('Configuration loaded.');
       } catch {
-        const privateKey = await exec('wg genkey');
-        const publicKey = await exec(`echo ${privateKey} | wg pubkey`, {
-          log: 'echo ***hidden*** | wg pubkey',
-        });
+        const { privateKey, publicKey } = generateKeyPair();
         
         const parsed = parseCIDR(env.WG_DEFAULT_ADDRESS);
 
@@ -72,8 +77,8 @@ class WireGuard {
       if (!env.WG_MANAGED) 
         return this.__configPromise;
       
-      await exec(`wg-quick down ${path.join(env.WG_PATH, 'wg0.conf')}`).catch(() => {});
-      await exec(`wg-quick up ${path.join(env.WG_PATH, 'wg0.conf')}`).catch((err) => {
+      await run('wg-quick', ['down', this.__confPath()]).catch(() => {});
+      await run('wg-quick', ['up', this.__confPath()]).catch((err) => {
         if (err && err.message && err.message.includes('Cannot find device "wg0"')) {
           throw new Error('WireGuard exited with the error: Cannot find device "wg0"\nThis usually means that your host\'s kernel does not support WireGuard!');
         }
@@ -149,7 +154,20 @@ ${client.preSharedKey ? `PresharedKey = ${client.preSharedKey}\n` : ''
 
   async __syncConfig() {
     debug('Config syncing...');
-    await exec(`wg syncconf wg0 <(wg-quick strip ${path.join(env.WG_PATH, 'wg0.conf')})`);
+    // The same as `wg syncconf wg0 <(wg-quick strip wg0.conf)`, without a shell. The stripped
+    // file holds the private key, so it lives in a directory only this user can enter, on the
+    // container's tmpfs, and is removed as soon as wg has read it.
+    const stripped = await run('wg-quick', ['strip', this.__confPath()], { log: false });
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'wg-easy-'));
+    try {
+      const file = path.join(dir, 'wg0.conf');
+      await fs.writeFile(file, `${stripped}\n`, { mode: 0o600 });
+      await run('wg', ['syncconf', 'wg0', file], {
+        log: `wg syncconf wg0 <(wg-quick strip ${this.__confPath()})`,
+      });
+    } finally {
+      await fs.rm(dir, { recursive: true, force: true });
+    }
     debug('Config synced.');
   }
 
@@ -176,7 +194,7 @@ ${client.preSharedKey ? `PresharedKey = ${client.preSharedKey}\n` : ''
         return clients;
 
     // Loop WireGuard status
-    const dump: string = await exec('wg show wg0 dump', {
+    const dump: string = await run('wg', ['show', 'wg0', 'dump'], {
       log: false,
     });
     dump
@@ -261,11 +279,8 @@ Endpoint = ${env.WG_HOST}:${env.WG_CONFIG_PORT}`;
     const config = await this.getConfig();
     if (!config) return;
 
-    const privateKey = await exec('wg genkey');
-    const publicKey = await exec(`echo ${privateKey} | wg pubkey`, {
-      log: 'echo ***hidden*** | wg pubkey',
-    });
-    const preSharedKey = await exec('wg genpsk');
+    const { privateKey, publicKey } = generateKeyPair();
+    const preSharedKey = generatePresharedKey();
 
     const address = getFirstAvailableIPv4Address(
       config.server.address, 
@@ -392,7 +407,7 @@ Endpoint = ${env.WG_HOST}:${env.WG_CONFIG_PORT}`;
 
   async Shutdown() {
     if (env.WG_MANAGED)
-      await exec(`wg-quick down ${path.join(env.WG_PATH, 'wg0.conf')}`).catch(() => {});
+      await run('wg-quick', ['down', this.__confPath()]).catch(() => {});
   }
 };
 

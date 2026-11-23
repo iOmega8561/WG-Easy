@@ -1,8 +1,8 @@
 'use strict';
 
 import bcrypt from 'bcryptjs';
-import childProcess from 'child_process';
-import { createHash } from 'crypto';
+import { execFile } from 'node:child_process';
+import { createHash, createPrivateKey, createPublicKey, randomBytes } from 'node:crypto';
 import ExecProps from '../types/ExecProps'
 import Client from '../types/Client';
 
@@ -19,8 +19,13 @@ export function isValidIPv4(str: string): boolean {
   return true;
 }
 
-export async function exec(
-  cmd: string, 
+/**
+ * Runs an executable with its arguments as a list: no shell, so nothing in an argument is
+ * ever interpreted.
+ */
+export async function run(
+  file: string,
+  args: string[],
   props: ExecProps = { log: true }
 ): Promise<string> {
   if (typeof props.log === 'string') {
@@ -28,7 +33,7 @@ export async function exec(
     console.log(`$ ${props.log}`);
   } else if (props.log === true) {
     // eslint-disable-next-line no-console
-    console.log(`$ ${cmd}`);
+    console.log(`$ ${[file, ...args].join(' ')}`);
   }
 
   if (process.platform !== 'linux') {
@@ -36,13 +41,55 @@ export async function exec(
   }
 
   return new Promise((resolve, reject) => {
-    childProcess.exec(cmd, {
-      shell: 'bash',
-    }, (err, stdout) => {
-      if (err) return reject(err);
+    execFile(file, args, (err, stdout, stderr) => {
+      if (err) {
+        err.message = `${err.message}\n${String(stderr).trim()}`.trim();
+        return reject(err);
+      }
       return resolve(String(stdout).trim());
     });
   });
+}
+
+/**
+ * A Curve25519 key pair in WireGuard's format (base64), generated in-process:
+ * the private key never appears on a command line or in a log.
+ */
+export function generateKeyPair(): { privateKey: string, publicKey: string } {
+  const key = randomBytes(32);
+
+  // Clamped exactly as `wg genkey` does.
+  key.writeUInt8(key.readUInt8(0) & 248, 0);
+  key.writeUInt8((key.readUInt8(31) & 127) | 64, 31);
+
+  const privateKey = key.toString('base64');
+  return { privateKey, publicKey: derivePublicKey(privateKey) };
+}
+
+/** The fixed DER header of a PKCS#8 X25519 private key; the 32 raw bytes follow it. */
+const X25519_PKCS8_PREFIX = Buffer.from('302e020100300506032b656e04220420', 'hex');
+
+/** The public key of a WireGuard private key, both in base64. */
+export function derivePublicKey(privateKey: string): string {
+  const d = Buffer.from(privateKey, 'base64');
+  if (d.length !== 32) {
+    throw new Error('A WireGuard private key is 32 bytes long.');
+  }
+
+  const keyObject = createPrivateKey({
+    key: Buffer.concat([X25519_PKCS8_PREFIX, d]),
+    format: 'der',
+    type: 'pkcs8',
+  });
+  const spki = createPublicKey(keyObject).export({ format: 'der', type: 'spki' });
+
+  // The raw public key is the last 32 bytes of its SubjectPublicKeyInfo.
+  return spki.subarray(spki.length - 32).toString('base64');
+}
+
+/** A WireGuard preshared key: 32 random bytes, as `wg genpsk` makes them. */
+export function generatePresharedKey(): string {
+  return randomBytes(32).toString('base64');
 }
 
 export function generateDefaultNft(
